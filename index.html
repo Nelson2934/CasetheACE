@@ -147,7 +147,7 @@
   .hl-green{color:var(--green);font-weight:700}
 
   /* Found badges */
-  .found-row{display:flex;justify-content:center;gap:6px;margin-bottom:clamp(6px,0.6vw,10px);min-height:4px;flex-wrap:wrap}
+  .found-row{display:none}
   .found-badge{
     padding:3px 8px;border-radius:5px;
     font-size:clamp(9px,0.8vw,13px);font-weight:700;
@@ -208,7 +208,17 @@
   }
 
   .card.removed{pointer-events:none}
-  .card.removed .card-back,.card.removed .card-front-face{opacity:.12}
+  .card.removed .card-back{display:none}
+  .card.removed .card-front-face{
+    background:#FFF !important;
+    border:1px solid #CCC !important;
+    box-shadow:none !important;
+    color:#DDD !important;
+    opacity:.6;
+  }
+  .card.removed .card-front-face .cf-rank,
+  .card.removed .card-front-face .cf-suit,
+  .card.removed .card-front-face .cf-mini{opacity:.2}
 
   .card-face{
     position:absolute;inset:0;backface-visibility:hidden;
