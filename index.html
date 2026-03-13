@@ -54,19 +54,21 @@
       max-width:100%;
       display:grid;
       grid-template-columns:1fr clamp(300px,25vw,500px);
-      grid-template-rows:auto 1fr;
+      grid-template-rows:auto auto;
       gap:0 clamp(16px,2vw,36px);
     }
     .top-bar{grid-column:1/-1}
     .board-area{grid-column:1;grid-row:2;display:flex;flex-direction:column}
     .side-panel{grid-column:2;grid-row:2;display:flex;flex-direction:column}
+    .history-list{max-height:50vh;overflow-y:auto}
   }
 
-  /* Only lock to viewport on big TVs where everything fits */
-  @media(min-width:1100px) and (min-height:900px){
-    .page{height:100vh;overflow:hidden}
+  /* Full viewport lock ONLY on very large displays (TVs) */
+  @media(min-width:1400px) and (min-height:1000px){
+    .page{height:100vh;overflow:hidden;grid-template-rows:auto 1fr}
     .board-area{overflow:hidden}
     .side-panel{overflow:hidden}
+    .history-list{max-height:none;flex:1;overflow-y:auto}
   }
 
   /* ===== TOP BAR ===== */
@@ -134,7 +136,20 @@
   .si-val.orange{color:var(--orange)}
   .si-val.white{color:var(--text)}
   .si-val.green{color:var(--green)}
-  .si-val.gold{color:var(--gold);font-weight:900}
+  .si-val.gold{
+    font-weight:900;
+    background:linear-gradient(90deg,#B8860B 0%,#DAA520 25%,#FFD700 50%,#DAA520 75%,#B8860B 100%);
+    background-size:200% 100%;
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    animation:jackpotShine 3s ease-in-out infinite;
+  }
+
+  @keyframes jackpotShine{
+    0%{background-position:200% center}
+    100%{background-position:-200% center}
+  }
   .si-divider{width:1px;height:clamp(20px,2.5vw,36px);background:var(--border)}
 
   /* Message */
@@ -185,7 +200,7 @@
 
   .card.revealed,.card.spinning,.card.spin-jackpot,.card.locked{pointer-events:none}
   .card.locked{cursor:default}
-  .card.spinning{animation:spinReveal 1s cubic-bezier(.22,1,.36,1) forwards}
+  .card.spinning{animation:spinReveal 1s cubic-bezier(.22,1,.36,1) forwards !important}
 
   @keyframes spinReveal{
     0%{transform:rotateY(0) scale(1)}
@@ -195,7 +210,7 @@
     100%{transform:rotateY(1080deg) scale(1)}
   }
 
-  .card.spin-jackpot{animation:spinJackpot 1.6s cubic-bezier(.22,1,.36,1) forwards}
+  .card.spin-jackpot{animation:spinJackpot 1.6s cubic-bezier(.22,1,.36,1) forwards !important}
 
   @keyframes spinJackpot{
     0%{transform:rotateY(0) scale(1)}
@@ -206,12 +221,30 @@
   }
 
   .card:not(.revealed):not(.spinning):not(.spin-jackpot):not(.removed):not(.locked):hover{
-    transform:translateY(-4px) scale(1.05);
+    transform:translateY(-6px) scale(1.06);
   }
   .card:not(.revealed):not(.spinning):not(.spin-jackpot):not(.removed):not(.locked):hover .card-back{
     border-color:var(--orange);
     box-shadow:0 4px 20px var(--orange-glow);
   }
+
+  /* Subtle idle float for unpicked cards */
+  .card:not(.revealed):not(.removed){
+    animation:cardFloat 3s ease-in-out infinite;
+  }
+  .card:not(.revealed):not(.removed):nth-child(2n){animation-delay:-.5s}
+  .card:not(.revealed):not(.removed):nth-child(3n){animation-delay:-1s}
+  .card:not(.revealed):not(.removed):nth-child(5n){animation-delay:-1.5s}
+  .card:not(.revealed):not(.removed):nth-child(7n){animation-delay:-2s}
+  .card:not(.revealed):not(.removed):nth-child(11n){animation-delay:-2.5s}
+
+  @keyframes cardFloat{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-3px)}
+  }
+
+  /* Override float when spinning */
+  .card.spinning,.card.spin-jackpot{animation:none !important}
 
   .card.removed{pointer-events:none}
   .card.removed .card-back{display:none}
@@ -234,22 +267,22 @@
   }
 
   .card-back{
-    background:#888;
-    border:1.5px solid #999;
+    background:#2C2C2E;
+    border:1.5px solid #3A3A3C;
     transition:border-color .2s,box-shadow .2s;
-    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    box-shadow:0 2px 8px rgba(0,0,0,0.12);
   }
 
   .card-back-inner{
     position:absolute;inset:clamp(3px,0.4vw,6px);
-    border:1px solid rgba(255,255,255,0.15);border-radius:4px;
+    border:1px solid rgba(255,255,255,0.08);border-radius:4px;
     display:flex;align-items:center;justify-content:center;
   }
 
   .card-back-txt{
     font-family:'Space Mono',monospace;
     font-size:clamp(8px,0.9vw,14px);font-weight:700;
-    color:#FFF;opacity:.4;
+    color:var(--orange);opacity:.45;
   }
 
   .card-front-face{
