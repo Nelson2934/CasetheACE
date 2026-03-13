@@ -128,6 +128,7 @@
   .si-val.orange{color:var(--orange)}
   .si-val.white{color:var(--text)}
   .si-val.green{color:var(--green)}
+  .si-val.gold{color:var(--gold);font-weight:900}
   .si-divider{width:1px;height:clamp(20px,2.5vw,36px);background:var(--border)}
 
   /* Message */
@@ -216,22 +217,22 @@
   }
 
   .card-back{
-    background:var(--card);
-    border:1.5px solid var(--border);
+    background:#111;
+    border:1.5px solid #333;
     transition:border-color .2s,box-shadow .2s;
-    box-shadow:0 1px 4px rgba(0,0,0,0.06);
+    box-shadow:0 2px 8px rgba(0,0,0,0.15);
   }
 
   .card-back-inner{
     position:absolute;inset:clamp(3px,0.4vw,6px);
-    border:1px solid rgba(255,58,0,0.06);border-radius:4px;
+    border:1px solid rgba(255,58,0,0.12);border-radius:4px;
     display:flex;align-items:center;justify-content:center;
   }
 
   .card-back-txt{
     font-family:'Space Mono',monospace;
     font-size:clamp(8px,0.9vw,14px);font-weight:700;
-    color:var(--orange);opacity:.25;
+    color:var(--orange);opacity:.5;
   }
 
   .card-front-face{
@@ -495,6 +496,8 @@
       <div class="si-item"><div class="si-label">Week</div><div class="si-val green" id="weekNum">1</div></div>
       <div class="si-divider"></div>
       <div class="si-item"><div class="si-label">Draws</div><div class="si-val white" id="totalDraws">0</div></div>
+      <div class="si-divider"></div>
+      <div class="si-item"><div class="si-label">Jackpot</div><div class="si-val gold" id="jackpotDisplay">£0</div></div>
     </div>
     <div class="message-bar" id="message">Connecting...</div>
   </div>
@@ -506,6 +509,12 @@
 
   <div class="side-panel">
     <div class="admin-section hidden" id="adminSection">
+      <div class="admin-label">Jackpot Amount</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
+        <span style="font-size:clamp(16px,1.5vw,24px);font-weight:800;color:var(--gold)">£</span>
+        <input class="admin-name-input" id="jackpotInput" type="number" placeholder="0" min="0" step="1" style="flex:1;font-weight:800;color:var(--gold)" onchange="updateJackpot()"/>
+        <button class="btn" style="flex:none;padding:clamp(8px,.8vw,12px) clamp(10px,1vw,16px)" onclick="updateJackpot()">Set</button>
+      </div>
       <div class="admin-label">This week's picker</div>
       <input class="admin-name-input" id="nameInput" type="text" placeholder="Enter name..." maxlength="30" autocomplete="off" onkeydown="if(event.key==='Enter')unlockTurn()"/>
       <div class="admin-btns">
@@ -617,8 +626,18 @@ function updateStatsUI(s){
   document.getElementById('cardsLeft').textContent=54-(s.revealed||[]).length;
   document.getElementById('weekNum').textContent=s.weekNum||1;
   document.getElementById('totalDraws').textContent=s.totalDraws||0;
+  const jp=s.jackpot||0;
+  document.getElementById('jackpotDisplay').textContent=`£${Number(jp).toLocaleString()}`;
+  const jInput=document.getElementById('jackpotInput');
+  if(jInput&&document.activeElement!==jInput)jInput.value=jp||'';
 }
 function setMessage(h){document.getElementById('message').innerHTML=h}
+
+function updateJackpot(){
+  if(!isAdmin||!gameState)return;
+  const val=parseInt(document.getElementById('jackpotInput').value)||0;
+  gameRef.update({jackpot:val});
+}
 
 gameRef.on('value',snap=>{
   const d=snap.val();
@@ -629,14 +648,14 @@ gameRef.on('value',snap=>{
   if(d.status==='locked')setMessage('Board locked — waiting for next draw');
   else if(d.status==='active')setMessage(`<span class="hl-green">${d.currentName||'Someone'}</span> is picking — find the <span class="hl-gold">Ace of Spades ♠</span>`);
   else if(d.status==='bonus')setMessage(`<span class="hl-green">${d.currentName||'Someone'}</span> found an Ace — picking again!`);
-  else if(d.status==='gameover')setMessage(`<span class="hl-gold">JACKPOT WON</span> by <span class="hl-gold">${d.winner||'someone'}</span>!`);
+  else if(d.status==='gameover'){const ja=d.jackpot?` — £${Number(d.jackpot).toLocaleString()}`:'';setMessage(`<span class="hl-gold">JACKPOT WON${ja}</span> by <span class="hl-gold">${d.winner||'someone'}</span>!`)}
   if(jr&&!isAdmin&&d.lastResult)showToast(d.lastResult,false);
 });
 historyRef.on('value',snap=>{const d=snap.val();historyData=d?Object.values(d).sort((a,b)=>b.draw-a.draw):[];renderHistory()});
 setTimeout(()=>{if(!gameState){document.getElementById('loadingScreen').classList.add('hidden');document.getElementById('pinScreen').classList.remove('hidden')}},3000);
 
 function initNewGame(){
-  gameRef.set({deck:buildDeck(),revealed:[],removed:[],foundItems:[],weekNum:1,totalDraws:0,status:'locked',gameOver:false,currentName:'',winner:null,lastResult:null});
+  gameRef.set({deck:buildDeck(),revealed:[],removed:[],foundItems:[],weekNum:1,totalDraws:0,status:'locked',gameOver:false,currentName:'',winner:null,lastResult:null,jackpot:0});
   historyRef.remove();
 }
 function unlockTurn(){
@@ -694,8 +713,9 @@ function showToast(result,isAdminAction){
   const sub=document.getElementById('rtSub'),btns=document.getElementById('rtBtns');
   toast.className='result-toast';
   if(result.type==='jackpot'){
+    const jpAmt=gameState&&gameState.jackpot?`£${Number(gameState.jackpot).toLocaleString()}`:'';
     toast.classList.add('jackpot');icon.textContent='♠';title.className='rt-title t-jackpot';title.textContent='🎉 JACKPOT! 🎉';
-    sub.innerHTML=`<span class="hl-gold">${result.name}</span> found the <span class="hl-gold">Ace of Spades ♠</span>!`;
+    sub.innerHTML=`<span class="hl-gold">${result.name}</span> found the <span class="hl-gold">Ace of Spades ♠</span>!${jpAmt?`<br>They win the <span class="hl-gold">${jpAmt} jackpot</span>!`:''}`;
     btns.innerHTML=isAdminAction?'<button class="btn" onclick="confirmReset()">New Game</button><button class="btn btn-muted" onclick="closeToast()">Close</button>':'<button class="btn btn-muted" onclick="closeToast()">Close</button>';
     if(!isAdminAction)launchConfetti();
   }else if(result.type==='joker'){
