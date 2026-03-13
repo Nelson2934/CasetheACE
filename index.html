@@ -224,8 +224,8 @@
     transform:translateY(-6px) scale(1.06);
   }
   .card:not(.revealed):not(.spinning):not(.spin-jackpot):not(.removed):not(.locked):hover .card-back{
-    border-color:var(--orange);
-    box-shadow:0 4px 20px var(--orange-glow);
+    border-color:rgba(255,255,255,0.5);
+    box-shadow:0 6px 24px rgba(27,58,92,0.5);
   }
 
   /* Subtle idle float for unpicked cards */
@@ -267,23 +267,67 @@
   }
 
   .card-back{
-    background:#2C2C2E;
-    border:1.5px solid #3A3A3C;
+    background:#1B3A5C;
+    border:1.5px solid #2A5080;
     transition:border-color .2s,box-shadow .2s;
-    box-shadow:0 2px 8px rgba(0,0,0,0.12);
+    box-shadow:0 2px 8px rgba(0,0,0,0.15);
+    overflow:hidden;
+  }
+
+  .card-back svg{
+    position:absolute;inset:0;width:100%;height:100%;
   }
 
   .card-back-inner{
     position:absolute;inset:clamp(3px,0.4vw,6px);
-    border:1px solid rgba(255,255,255,0.08);border-radius:4px;
+    border:1.5px solid rgba(255,255,255,0.2);border-radius:4px;
     display:flex;align-items:center;justify-content:center;
+  }
+
+  .card-back-inner::before{
+    content:'';position:absolute;inset:clamp(2px,0.3vw,4px);
+    border:1px solid rgba(255,255,255,0.1);border-radius:3px;
   }
 
   .card-back-txt{
     font-family:'Space Mono',monospace;
-    font-size:clamp(8px,0.9vw,14px);font-weight:700;
-    color:var(--orange);opacity:.45;
+    font-size:clamp(9px,1vw,16px);font-weight:700;
+    color:#FFF;letter-spacing:1px;
+    text-shadow:0 0 8px rgba(255,255,255,0.3);
+    z-index:1;
   }
+
+  .card-back-pattern{
+    position:absolute;inset:0;
+    background:
+      repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,0.03) 4px,rgba(255,255,255,0.03) 5px),
+      repeating-linear-gradient(-45deg,transparent,transparent 4px,rgba(255,255,255,0.03) 4px,rgba(255,255,255,0.03) 5px);
+  }
+
+  .card-back-diamond{
+    position:absolute;top:50%;left:50%;
+    width:60%;height:60%;
+    transform:translate(-50%,-50%) rotate(45deg);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:2px;
+  }
+
+  .card-back-diamond::before{
+    content:'';position:absolute;inset:15%;
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:1px;
+  }
+
+  .card-back-corners{
+    position:absolute;inset:clamp(6px,0.7vw,10px);
+  }
+
+  .card-back-corners::before,.card-back-corners::after{
+    content:'❖';position:absolute;
+    font-size:clamp(6px,0.6vw,10px);color:rgba(255,255,255,0.15);
+  }
+  .card-back-corners::before{top:0;left:50%;transform:translateX(-50%)}
+  .card-back-corners::after{bottom:0;left:50%;transform:translateX(-50%) rotate(180deg)}
 
   .card-front-face{
     background:#FAFAFA;border:1.5px solid #DDD;
@@ -654,7 +698,7 @@ function renderDeck(deck,revealed,removed){
     if(isRev||isRem){el.classList.add('revealed');if(isRem)el.classList.add('removed')}
     if(!isAdmin||!gameState||gameState.status!=='active')el.classList.add('locked');
     el.dataset.index=i;
-    el.innerHTML=`<div class="card-face card-back" ${(isRev||isRem)?'style="display:none"':''}><div class="card-back-inner"><div class="card-back-txt">GXO</div></div></div><div class="card-face ${fc}" ${(isRev||isRem)?'style="backface-visibility:visible;transform:none"':''}><div class="cf-mini">${miniTxt}</div><div class="cf-rank">${card.isJoker?'🃏':card.rank}</div><div class="cf-suit">${card.suit}</div></div>`;
+    el.innerHTML=`<div class="card-face card-back" ${(isRev||isRem)?'style="display:none"':''}><div class="card-back-pattern"></div><div class="card-back-diamond"></div><div class="card-back-corners"></div><div class="card-back-inner"><div class="card-back-txt">GXO</div></div></div><div class="card-face ${fc}" ${(isRev||isRem)?'style="backface-visibility:visible;transform:none"':''}><div class="cf-mini">${miniTxt}</div><div class="cf-rank">${card.isJoker?'🃏':card.rank}</div><div class="cf-suit">${card.suit}</div></div>`;
     el.addEventListener('click',()=>pickCard(i,el));
     slot.appendChild(el);grid.appendChild(slot);
   });
