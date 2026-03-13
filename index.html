@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GXO — Chase the Ace</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600;700;800;900&display=swap');
+
+  :root {
+    --gxo-orange: #FF3A00;
+    --gxo-orange-glow: rgba(255, 58, 0, 0.4);
+    --gxo-dark: #0A0A0A;
+    --gxo-darker: #050505;
+    --gxo-card: #141414;
+    --gxo-text: #FFFFFF;
+    --gxo-muted: #666666;
+    --gxo-border: #222222;
+    --gxo-green: #00C853;
+    --gxo-red: #FF1744;
+    --gxo-gold: #FFD600;
+    --gxo-purple: #AA00FF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--gxo-darker);
+    color: var(--gxo-text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,58,0,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,58,0,0.025) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+
+  .header { text-align: center; margin-bottom: 20px; }
+
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 44px; font-weight: 700; letter-spacing: -2px;
+    color: var(--gxo-orange);
+    text-shadow: 0 0 40px var(--gxo-orange-glow);
+    line-height: 1;
+  }
+
+  .subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; letter-spacing: 5px;
+    text-transform: uppercase; color: var(--gxo-muted); margin-top: 4px;
+  }
+
+  /* LIVE BADGE */
+  .live-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 10px; padding: 4px 12px;
+    background: rgba(0,200,83,0.1); border: 1px solid rgba(0,200,83,0.25);
+    border-radius: 20px; font-size: 11px; font-weight: 700;
+    font-family: 'Space Mono', monospace; color: var(--gxo-green);
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--gxo-green);
+    animation: livePulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--gxo-green); }
+    50% { opacity: 0.4; box-shadow: none; }
+  }
+
+  .spectator-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 8px; padding: 4px 12px;
+    background: rgba(255,58,0,0.08); border: 1px solid rgba(255,58,0,0.15);
+    border-radius: 20px; font-size: 10px; font-weight: 600;
+    font-family: 'Space Mono', monospace; color: var(--gxo-muted);
+    letter-spacing: 1px;
+  }
+
+  /* STATS */
+  .stats-bar {
+    display: flex; justify-content: center; gap: 24px;
+    margin-bottom: 16px; padding: 14px 20px;
+    background: var(--gxo-card); border: 1px solid var(--gxo-border);
+    border-radius: 10px; flex-wrap: wrap;
+  }
+
+  .stat { text-align: center; min-width: 60px; }
+
+  .stat-label {
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gxo-muted); font-family: 'Space Mono', monospace;
+  }
+
+  .stat-val {
+    font-size: 24px; font-weight: 800;
+    font-variant-numeric: tabular-nums; line-height: 1.3;
+  }
+
+  .stat-val.orange { color: var(--gxo-orange); }
+  .stat-val.white { color: var(--gxo-text); }
+  .stat-val.green { color: var(--gxo-green); }
+  .stat-divider { width: 1px; background: var(--gxo-border); }
+
+  /* MESSAGE */
+  .message-bar {
+    text-align: center; padding: 14px 16px; margin-bottom: 16px;
+    background: linear-gradient(135deg, rgba(255,58,0,0.07), rgba(255,58,0,0.01));
+    border: 1px solid rgba(255,58,0,0.12); border-radius: 10px;
+    font-size: 15px; color: var(--gxo-text);
+    min-height: 48px; display: flex; align-items: center;
+    justify-content: center; line-height: 1.4;
+  }
+
+  .hl { color: var(--gxo-orange); font-weight: 700; }
+  .hl-gold { color: var(--gxo-gold); font-weight: 700; }
+  .hl-purple { color: var(--gxo-purple); font-weight: 700; }
+  .hl-green { color: var(--gxo-green); font-weight: 700; }
+
+  /* FOUND ROW */
+  .found-row {
+    display: flex; justify-content: center; gap: 8px;
+    margin-bottom: 14px; min-height: 6px; flex-wrap: wrap;
+  }
+
+  .found-badge {
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 11px; font-weight: 700;
+    font-family: 'Space Mono', monospace;
+    animation: badgePop 0.3s ease-out;
+  }
+
+  .found-badge.ace { background: rgba(255,58,0,0.15); color: var(--gxo-orange); border: 1px solid rgba(255,58,0,0.3); }
+  .found-badge.joker { background: rgba(170,0,255,0.15); color: var(--gxo-purple); border: 1px solid rgba(170,0,255,0.3); }
+
+  @keyframes badgePop { 0% { transform: scale(0); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
+  /* CARD GRID */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+    gap: 10px; margin-bottom: 24px;
+  }
+
+  @media (min-width: 700px) { .card-grid { grid-template-columns: repeat(9, 1fr); } }
+
+  .card-slot {
+    aspect-ratio: 2.5 / 3.5; perspective: 800px;
+    animation: cardAppear 0.3s ease-out both;
+  }
+
+  .card {
+    width: 100%; height: 100%; position: relative;
+    cursor: pointer; transform-style: preserve-3d;
+    transition: transform 0.15s ease;
+  }
+
+  .card.revealed, .card.spinning, .card.spin-jackpot, .card.locked { pointer-events: none; }
+  .card.locked { cursor: default; }
+
+  .card.spinning { animation: spinReveal 1s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+  @keyframes spinReveal {
+    0% { transform: rotateY(0deg) scale(1); }
+    30% { transform: rotateY(540deg) scale(1.15); }
+    60% { transform: rotateY(900deg) scale(1.1); }
+    80% { transform: rotateY(1060deg) scale(1.05); }
+    100% { transform: rotateY(1080deg) scale(1); }
+  }
+
+  .card.spin-jackpot { animation: spinJackpot 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+  @keyframes spinJackpot {
+    0% { transform: rotateY(0deg) scale(1); }
+    20% { transform: rotateY(720deg) scale(1.2); }
+    50% { transform: rotateY(1440deg) scale(1.3); }
+    75% { transform: rotateY(1800deg) scale(1.2); }
+    100% { transform: rotateY(2160deg) scale(1); }
+  }
+
+  .card:not(.revealed):not(.spinning):not(.spin-jackpot):not(.removed):not(.locked):hover {
+    transform: translateY(-4px) scale(1.05);
+  }
+
+  .card:not(.revealed):not(.spinning):not(.spin-jackpot):not(.removed):not(.locked):hover .card-back {
+    border-color: var(--gxo-orange);
+    box-shadow: 0 0 20px var(--gxo-orange-glow);
+  }
+
+  .card.removed { pointer-events: none; }
+  .card.removed .card-back,
+  .card.removed .card-front-face { opacity: 0.12; }
+
+  .card-face {
+    position: absolute; inset: 0; backface-visibility: hidden;
+    border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; flex-direction: column; overflow: hidden;
+  }
+
+  .card-back {
+    background: var(--gxo-card);
+    border: 1.5px solid var(--gxo-border);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .card-back-inner {
+    position: absolute; inset: 5px;
+    border: 1px solid rgba(255,58,0,0.08); border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .card-back-txt {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    color: var(--gxo-orange); opacity: 0.35;
+  }
+
+  .card-front-face {
+    background: #f5f5f5; border: 1.5px solid #ddd;
+    transform: rotateY(180deg); color: #111; padding: 4px;
+  }
+
+  .card-front-face.red { color: var(--gxo-red); }
+
+  .card-front-face.is-ace-spades {
+    background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+    border: 2px solid var(--gxo-gold); color: var(--gxo-gold);
+    box-shadow: 0 0 30px rgba(255,214,0,0.4), 0 0 60px rgba(255,214,0,0.15);
+  }
+
+  .card-front-face.is-other-ace {
+    background: linear-gradient(135deg, #0f0f0f, #181818);
+    border: 2px solid var(--gxo-orange); color: var(--gxo-orange);
+    box-shadow: 0 0 20px var(--gxo-orange-glow);
+  }
+
+  .card-front-face.is-joker {
+    background: linear-gradient(135deg, #1a0030, #0f0020);
+    border: 2px solid var(--gxo-purple); color: var(--gxo-purple);
+    box-shadow: 0 0 25px rgba(170,0,255,0.35);
+  }
+
+  .cf-rank { font-size: clamp(18px, 4vw, 26px); font-weight: 900; line-height: 1; }
+  .cf-suit { font-size: clamp(16px, 3.5vw, 24px); line-height: 1; margin-top: 1px; }
+
+  .cf-mini {
+    position: absolute; top: 3px; left: 4px;
+    font-size: 9px; font-weight: 700; line-height: 1;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  /* BUTTONS */
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 12px 28px; border: 2px solid var(--gxo-orange);
+    border-radius: 8px; background: transparent;
+    color: var(--gxo-orange); cursor: pointer; transition: all 0.2s;
+  }
+
+  .btn:hover { background: var(--gxo-orange); color: var(--gxo-dark); box-shadow: 0 0 25px var(--gxo-orange-glow); }
+  .btn:active { transform: scale(0.97); }
+  .btn-green { border-color: var(--gxo-green); color: var(--gxo-green); }
+  .btn-green:hover { background: var(--gxo-green); color: #000; box-shadow: 0 0 25px rgba(0,200,83,0.4); }
+  .btn-large { font-size: 14px; padding: 16px 40px; }
+  .btn-muted { border-color: var(--gxo-muted); color: var(--gxo-muted); }
+  .btn-muted:hover { background: var(--gxo-muted); color: #000; box-shadow: none; }
+
+  .controls { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+  /* ===== ADMIN PIN SCREEN ===== */
+  .pin-screen {
+    position: fixed; inset: 0;
+    background: rgba(5,5,5,0.97);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200; backdrop-filter: blur(16px);
+    flex-direction: column; text-align: center; padding: 30px;
+  }
+
+  .pin-screen.hidden { display: none; }
+
+  .pin-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 36px; font-weight: 700;
+    color: var(--gxo-orange); margin-bottom: 30px;
+    text-shadow: 0 0 40px var(--gxo-orange-glow);
+  }
+
+  .pin-title {
+    font-size: 20px; font-weight: 700; margin-bottom: 6px;
+  }
+
+  .pin-sub {
+    font-size: 14px; color: var(--gxo-muted); margin-bottom: 24px;
+    line-height: 1.5; max-width: 340px;
+  }
+
+  .pin-input {
+    width: 200px; padding: 14px 16px;
+    background: var(--gxo-card); border: 2px solid var(--gxo-border);
+    border-radius: 8px; color: var(--gxo-text);
+    font-family: 'Space Mono', monospace; font-size: 24px;
+    font-weight: 700; outline: none; text-align: center;
+    letter-spacing: 8px; transition: border-color 0.2s;
+    -webkit-text-security: disc;
+  }
+
+  .pin-input:focus { border-color: var(--gxo-orange); }
+
+  .pin-error {
+    color: var(--gxo-red); font-size: 13px; margin-top: 10px;
+    height: 20px; font-weight: 600;
+  }
+
+  .pin-btns { display: flex; gap: 12px; margin-top: 20px; }
+
+  /* ===== LOCK / READY SCREEN (admin only) ===== */
+  .lock-screen {
+    position: fixed; inset: 0;
+    background: rgba(5,5,5,0.97);
+    display: none; align-items: center; justify-content: center;
+    z-index: 50; backdrop-filter: blur(16px);
+    flex-direction: column; text-align: center; padding: 30px;
+  }
+
+  .lock-screen.active { display: flex; }
+
+  .lock-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px; font-weight: 700;
+    color: var(--gxo-orange); opacity: 0.3;
+    position: absolute; top: 24px; left: 50%; transform: translateX(-50%);
+  }
+
+  .lock-week {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--gxo-muted); margin-bottom: 10px;
+  }
+
+  .lock-cards-left {
+    font-family: 'Space Mono', monospace;
+    font-size: 64px; font-weight: 700;
+    color: var(--gxo-orange);
+    text-shadow: 0 0 40px var(--gxo-orange-glow);
+    line-height: 1; margin-bottom: 4px;
+  }
+
+  .lock-cards-label {
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gxo-muted); font-family: 'Space Mono', monospace;
+    margin-bottom: 32px;
+  }
+
+  .lock-name-section { margin-bottom: 28px; width: 100%; max-width: 340px; }
+
+  .lock-name-label {
+    font-size: 13px; font-weight: 600; color: var(--gxo-muted);
+    margin-bottom: 10px; text-align: left;
+  }
+
+  .lock-name-input {
+    width: 100%; padding: 14px 16px;
+    background: var(--gxo-card); border: 2px solid var(--gxo-border);
+    border-radius: 8px; color: var(--gxo-text);
+    font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 600;
+    outline: none; text-align: center; transition: border-color 0.2s;
+  }
+
+  .lock-name-input:focus { border-color: var(--gxo-orange); }
+  .lock-name-input::placeholder { color: #444; font-weight: 400; }
+
+  .lock-info {
+    font-size: 14px; color: var(--gxo-muted); line-height: 1.5;
+    margin-bottom: 8px; max-width: 360px;
+  }
+
+  /* ===== RESULT OVERLAY ===== */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(5,5,5,0.93);
+    display: none; align-items: center; justify-content: center;
+    z-index: 100; backdrop-filter: blur(12px);
+  }
+
+  .overlay.active { display: flex; }
+
+  .overlay-box {
+    text-align: center; padding: 44px 50px;
+    background: var(--gxo-card); border: 1px solid var(--gxo-border);
+    border-radius: 16px; max-width: 460px; margin: 20px;
+  }
+
+  .overlay-icon { font-size: 56px; margin-bottom: 12px; }
+
+  .overlay-title { font-size: 28px; font-weight: 900; margin-bottom: 6px; }
+  .overlay-title.jackpot { color: var(--gxo-gold); text-shadow: 0 0 30px rgba(255,214,0,0.4); }
+  .overlay-title.joker-win { color: var(--gxo-purple); }
+  .overlay-title.other-ace { color: var(--gxo-orange); }
+  .overlay-title.miss { color: var(--gxo-muted); }
+
+  .overlay-sub { font-size: 15px; color: var(--gxo-muted); margin-bottom: 28px; line-height: 1.6; }
+  .overlay-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* ===== DRAW HISTORY ===== */
+  .history-section {
+    margin-top: 30px; background: var(--gxo-card);
+    border: 1px solid var(--gxo-border); border-radius: 10px; overflow: hidden;
+  }
+
+  .history-header {
+    padding: 14px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--gxo-muted);
+    border-bottom: 1px solid var(--gxo-border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .history-list { max-height: 300px; overflow-y: auto; }
+
+  .history-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 14px;
+  }
+
+  .history-item:last-child { border-bottom: none; }
+  .history-item.new-item { animation: histSlide 0.3s ease-out; }
+
+  @keyframes histSlide { 0% { opacity: 0; transform: translateX(-10px); } 100% { opacity: 1; transform: translateX(0); } }
+
+  .hist-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--gxo-muted); min-width: 28px;
+  }
+
+  .hist-name { font-weight: 600; flex: 1; }
+
+  .hist-card {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; font-weight: 700; padding: 3px 8px; border-radius: 4px;
+  }
+
+  .hist-card.normal { background: rgba(255,255,255,0.05); color: var(--gxo-muted); }
+  .hist-card.ace { background: rgba(255,58,0,0.15); color: var(--gxo-orange); }
+  .hist-card.joker { background: rgba(170,0,255,0.15); color: var(--gxo-purple); }
+  .hist-card.jackpot { background: rgba(255,214,0,0.15); color: var(--gxo-gold); }
+
+  .hist-result { font-size: 12px; color: var(--gxo-muted); min-width: 80px; text-align: right; }
+  .hist-result.prize { color: var(--gxo-purple); font-weight: 600; }
+  .hist-result.bonus { color: var(--gxo-orange); font-weight: 600; }
+  .hist-result.jackpot { color: var(--gxo-gold); font-weight: 700; }
+
+  .history-empty {
+    padding: 20px; text-align: center;
+    color: var(--gxo-muted); font-size: 13px;
+  }
+
+  /* CONFETTI */
+  .confetti-piece { position: fixed; z-index: 200; pointer-events: none; opacity: 0; }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  @keyframes cardAppear {
+    0% { opacity: 0; transform: scale(0.8) rotateY(40deg); }
+    100% { opacity: 1; transform: scale(1) rotateY(0deg); }
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(0,200,83,0.3); }
+    50% { box-shadow: 0 0 40px rgba(0,200,83,0.5), 0 0 70px rgba(0,200,83,0.15); }
+  }
+
+  .btn-pulse { animation: glowPulse 2s ease-in-out infinite; }
+
+  /* LOADING */
+  .loading-screen {
+    position: fixed; inset: 0;
+    background: var(--gxo-darker);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 300; flex-direction: column; gap: 16px;
+  }
+
+  .loading-screen.hidden { display: none; }
+
+  .loading-spinner {
+    width: 40px; height: 40px; border: 3px solid var(--gxo-border);
+    border-top-color: var(--gxo-orange); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 500px) {
+    .overlay-box { padding: 30px 24px; }
+    .lock-cards-left { font-size: 50px; }
+    .history-item { padding: 8px 14px; font-size: 13px; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-spinner"></div>
+  <div style="color:var(--gxo-muted);font-size:13px;font-family:'Space Mono',monospace;">Connecting...</div>
+</div>
+
+<!-- ADMIN PIN SCREEN -->
+<div class="pin-screen hidden" id="pinScreen">
+  <div class="pin-logo">GXO</div>
+  <div class="pin-title">Chase the Ace</div>
+  <div class="pin-sub">Enter the admin PIN to run draws, or watch as a spectator</div>
+  <input class="pin-input" id="pinInput" type="password" maxlength="6" placeholder="••••" autocomplete="off" />
+  <div class="pin-error" id="pinError"></div>
+  <div class="pin-btns">
+    <button class="btn btn-green" onclick="submitPin()">Enter as Admin</button>
+    <button class="btn-muted btn" onclick="enterSpectator()">Watch Live</button>
+  </div>
+</div>
+
+<!-- LOCK / READY SCREEN (admin only) -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-logo">GXO</div>
+  <div class="lock-week" id="lockWeek">Week 1</div>
+  <div class="lock-cards-left" id="lockCardsLeft">54</div>
+  <div class="lock-cards-label">cards remaining</div>
+  <div class="lock-name-section">
+    <div class="lock-name-label">This week's picker</div>
+    <input class="lock-name-input" id="nameInput" type="text" placeholder="Enter name..." maxlength="30" autocomplete="off" onkeydown="if(event.key==='Enter')unlockTurn()" />
+  </div>
+  <div class="lock-info">Pick <strong>one card</strong> to find the <span class="hl-gold">Ace of Spades ♠</span></div>
+  <button class="btn btn-green btn-large btn-pulse" onclick="unlockTurn()">Pick a Card</button>
+</div>
+
+<!-- RESULT OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="overlay-box">
+    <div class="overlay-icon" id="overlayIcon"></div>
+    <div class="overlay-title" id="overlayTitle"></div>
+    <div class="overlay-sub" id="overlaySub"></div>
+    <div class="overlay-btns" id="overlayBtns"></div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div class="container">
+  <div class="header">
+    <div class="logo">GXO</div>
+    <div class="subtitle">Chase the Ace</div>
+    <div class="live-badge"><div class="live-dot"></div> Live</div>
+    <div class="spectator-badge" id="modeBadge">Admin</div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-label">Cards Left</div>
+      <div class="stat-val orange" id="cardsLeft">54</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-label">Week</div>
+      <div class="stat-val green" id="weekNum">1</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-label">Draws</div>
+      <div class="stat-val white" id="totalDraws">0</div>
+    </div>
+  </div>
+
+  <div class="message-bar" id="message">Connecting...</div>
+
+  <div class="found-row" id="foundRow"></div>
+  <div class="card-grid" id="cardGrid"></div>
+
+  <div class="controls" id="adminControls" style="display:none;">
+    <button class="btn" onclick="lockForNextDraw()">Lock Board</button>
+    <button class="btn btn-muted" onclick="confirmReset()">Reset Game</button>
+  </div>
+
+  <!-- DRAW HISTORY -->
+  <div class="history-section">
+    <div class="history-header">
+      <span>Draw History</span>
+      <span id="histCount">0 draws</span>
+    </div>
+    <div class="history-list" id="historyList">
+      <div class="history-empty">No draws yet</div>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+// =====================================================
+// FIREBASE CONFIG — REPLACE THESE WITH YOUR VALUES
+// =====================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyDJoo6khQ59s_BG0tfE4pmaWytncRN64Ao",
+  authDomain: "case-the-ace.firebaseapp.com",
+  databaseURL: "https://case-the-ace-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "case-the-ace",
+  storageBucket: "case-the-ace.firebasestorage.app",
+  messagingSenderId: "662987665662",
+  appId: "1:662987665662:web:34cf928b2b564b850675af"
+};
+
+// ADMIN PIN — change this to whatever you want
+const ADMIN_PIN = "1234";
+
+// =====================================================
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const gameRef = db.ref('game');
+const historyRef = db.ref('history');
+
+// ===== STATE =====
+const SUITS = ['♠','♥','♦','♣'];
+const SUIT_NAMES = {'♠':'Spades','♥':'Hearts','♦':'Diamonds','♣':'Clubs'};
+const RED_SUITS = new Set(['♥','♦']);
+const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+
+let isAdmin = false;
+let gameState = null;
+let historyData = [];
+let currentName = '';
+let pickInProgress = false;
+let lastRevealedCount = 0;
+
+// ===== PIN / AUTH =====
+
+function submitPin() {
+  const pin = document.getElementById('pinInput').value;
+  if (pin === ADMIN_PIN) {
+    isAdmin = true;
+    document.getElementById('pinScreen').classList.add('hidden');
+    document.getElementById('modeBadge').textContent = 'Admin';
+    document.getElementById('adminControls').style.display = 'flex';
+    if (gameState && gameState.status === 'locked') {
+      showLockScreen();
+    }
+  } else {
+    document.getElementById('pinError').textContent = 'Wrong PIN';
+    document.getElementById('pinInput').value = '';
+    setTimeout(() => document.getElementById('pinError').textContent = '', 2000);
+  }
+}
+
+function enterSpectator() {
+  isAdmin = false;
+  document.getElementById('pinScreen').classList.add('hidden');
+  document.getElementById('modeBadge').textContent = 'Spectator';
+  document.getElementById('adminControls').style.display = 'none';
+}
+
+document.getElementById('pinInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitPin();
+});
+
+// ===== DECK =====
+
+function buildDeck() {
+  const deck = [];
+  for (const suit of SUITS) {
+    for (const rank of RANKS) {
+      deck.push({ rank, suit });
+    }
+  }
+  deck.push({ rank: '★', suit: '', isJoker: true, jokerNum: 1 });
+  deck.push({ rank: '★', suit: '', isJoker: true, jokerNum: 2 });
+  shuffle(deck);
+  return deck;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+function isAceOfSpades(c) { return c.rank === 'A' && c.suit === '♠'; }
+function isOtherAce(c) { return c.rank === 'A' && c.suit !== '♠' && !c.isJoker; }
+
+// ===== RENDER =====
+
+function renderDeck(deck, revealed, removed) {
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML = '';
+
+  deck.forEach((card, i) => {
+    const slot = document.createElement('div');
+    slot.className = 'card-slot';
+    slot.style.animationDelay = `${i * 0.012}s`;
+
+    const isRed = RED_SUITS.has(card.suit);
+    let fc = 'card-front-face';
+    if (isRed) fc += ' red';
+    if (isAceOfSpades(card)) fc += ' is-ace-spades';
+    else if (isOtherAce(card)) fc += ' is-other-ace';
+    else if (card.isJoker) fc += ' is-joker';
+
+    const miniTxt = card.isJoker ? '🃏' : `${card.rank}<br>${card.suit}`;
+    const isRevealed = revealed && revealed.includes(i);
+    const isRemoved = removed && removed.includes(i);
+
+    const el = document.createElement('div');
+    el.className = 'card';
+
+    // Apply state
+    if (isRevealed || isRemoved) {
+      el.classList.add('revealed');
+      if (isRemoved) el.classList.add('removed');
+    }
+
+    // Lock cards for spectators or when board is locked
+    if (!isAdmin || !gameState || gameState.status !== 'active') {
+      el.classList.add('locked');
+    }
+
+    el.dataset.index = i;
+    el.innerHTML = `
+      <div class="card-face card-back" ${(isRevealed || isRemoved) ? 'style="display:none"' : ''}>
+        <div class="card-back-inner"><div class="card-back-txt">GXO</div></div>
+      </div>
+      <div class="card-face ${fc}" ${(isRevealed || isRemoved) ? 'style="backface-visibility:visible;transform:none"' : ''}>
+        <div class="cf-mini">${miniTxt}</div>
+        <div class="cf-rank">${card.isJoker ? '🃏' : card.rank}</div>
+        <div class="cf-suit">${card.suit}</div>
+      </div>
+    `;
+
+    el.addEventListener('click', () => pickCard(i, el));
+    slot.appendChild(el);
+    grid.appendChild(slot);
+  });
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  const count = document.getElementById('histCount');
+  count.textContent = `${historyData.length} draw${historyData.length !== 1 ? 's' : ''}`;
+
+  if (historyData.length === 0) {
+    list.innerHTML = '<div class="history-empty">No draws yet</div>';
+    return;
+  }
+
+  list.innerHTML = historyData.map((h, i) => {
+    const cardClass = h.type === 'jackpot' ? 'jackpot' : h.type === 'joker' ? 'joker' : h.type === 'ace' ? 'ace' : 'normal';
+    return `
+      <div class="history-item ${i === 0 ? 'new-item' : ''}">
+        <span class="hist-num">#${h.draw}</span>
+        <span class="hist-name">${h.name}</span>
+        <span class="hist-card ${cardClass}">${h.cardLabel}</span>
+        <span class="hist-result ${h.resultClass}">${h.result}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateFoundRow(foundItems) {
+  const row = document.getElementById('foundRow');
+  row.innerHTML = '';
+  if (!foundItems) return;
+  foundItems.forEach(item => {
+    const b = document.createElement('span');
+    b.className = `found-badge ${item.type}`;
+    b.textContent = item.label;
+    row.appendChild(b);
+  });
+}
+
+function updateStatsUI(state) {
+  const revealed = state.revealed || [];
+  const removed = state.removed || [];
+  const remaining = 54 - revealed.length - removed.length + revealed.filter(i => removed.includes(i)).length;
+  // More accurate: removed is subset of revealed, so remaining = 54 - revealed.length
+  document.getElementById('cardsLeft').textContent = 54 - revealed.length;
+  document.getElementById('weekNum').textContent = state.weekNum || 1;
+  document.getElementById('totalDraws').textContent = state.totalDraws || 0;
+}
+
+function setMessage(html) {
+  document.getElementById('message').innerHTML = html;
+}
+
+// ===== FIREBASE LISTENERS =====
+
+gameRef.on('value', snapshot => {
+  const data = snapshot.val();
+  if (!data) {
+    // No game exists — init if admin
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.getElementById('pinScreen').classList.remove('hidden');
+    return;
+  }
+
+  gameState = data;
+
+  // Hide loading
+  document.getElementById('loadingScreen').classList.add('hidden');
+
+  // Show pin screen if not yet authed
+  if (!isAdmin && document.getElementById('pinScreen').classList.contains('hidden') === false) {
+    // Already showing pin screen, leave it
+  }
+
+  // Detect if a NEW card was just revealed (for spectator animations)
+  const newRevealedCount = (data.revealed || []).length;
+  const justRevealed = newRevealedCount > lastRevealedCount && lastRevealedCount > 0;
+  lastRevealedCount = newRevealedCount;
+
+  // Render the board
+  renderDeck(data.deck, data.revealed || [], data.removed || []);
+  updateStatsUI(data);
+  updateFoundRow(data.foundItems || []);
+
+  // Handle status-specific UI
+  if (data.status === 'locked') {
+    setMessage('Board is locked — waiting for next draw');
+    if (isAdmin) showLockScreen();
+  } else if (data.status === 'active') {
+    setMessage(`<span class="hl-green">${data.currentName || 'Someone'}</span> is picking — find the <span class="hl-gold">Ace of Spades ♠</span>`);
+    document.getElementById('lockScreen').classList.remove('active');
+  } else if (data.status === 'gameover') {
+    setMessage(`<span class="hl-gold">JACKPOT WON</span> by <span class="hl-gold">${data.winner || 'someone'}</span>! Game over.`);
+  }
+
+  // If a card was just picked and we're spectator, show the result
+  if (justRevealed && !isAdmin && data.lastResult) {
+    showSpectatorResult(data.lastResult);
+  }
+
+  // If spectator and game status is active with bonus, show message
+  if (data.status === 'bonus' && !isAdmin) {
+    setMessage(`<span class="hl-green">${data.currentName}</span> found an Ace — picking again!`);
+  }
+});
+
+historyRef.on('value', snapshot => {
+  const data = snapshot.val();
+  historyData = data ? Object.values(data).sort((a, b) => b.draw - a.draw) : [];
+  renderHistory();
+});
+
+// Show pin screen after loading
+setTimeout(() => {
+  if (!gameState) {
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.getElementById('pinScreen').classList.remove('hidden');
+  }
+}, 3000);
+
+// ===== GAME INIT =====
+
+function initNewGame() {
+  const deck = buildDeck();
+  const state = {
+    deck,
+    revealed: [],
+    removed: [],
+    foundItems: [],
+    weekNum: 1,
+    totalDraws: 0,
+    status: 'locked',
+    gameOver: false,
+    currentName: '',
+    winner: null,
+    lastResult: null
+  };
+  gameRef.set(state);
+  historyRef.remove();
+}
+
+// ===== ADMIN ACTIONS =====
+
+function showLockScreen() {
+  if (!isAdmin || !gameState) return;
+  const remaining = 54 - (gameState.revealed || []).length;
+  document.getElementById('lockCardsLeft').textContent = remaining;
+  document.getElementById('lockWeek').textContent = `Week ${gameState.weekNum || 1}`;
+  document.getElementById('nameInput').value = '';
+  document.getElementById('lockScreen').classList.add('active');
+}
+
+function unlockTurn() {
+  if (!isAdmin) return;
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) {
+    const inp = document.getElementById('nameInput');
+    inp.style.borderColor = '#FF1744';
+    inp.focus();
+    setTimeout(() => inp.style.borderColor = '', 1500);
+    return;
+  }
+  currentName = name;
+  document.getElementById('lockScreen').classList.remove('active');
+  pickInProgress = false;
+
+  gameRef.update({
+    status: 'active',
+    currentName: name,
+    lastResult: null
+  });
+}
+
+function lockForNextDraw() {
+  if (!isAdmin || !gameState || gameState.gameOver) return;
+  gameRef.update({
+    status: 'locked',
+    weekNum: (gameState.weekNum || 1) + 1,
+    currentName: '',
+    lastResult: null
+  });
+}
+
+function confirmReset() {
+  if (!isAdmin) return;
+  if (gameState && gameState.gameOver || confirm('Reset the game? This will reshuffle all 54 cards and clear history.')) {
+    initNewGame();
+  }
+}
+
+// ===== PICK CARD =====
+
+function pickCard(index, el) {
+  if (!isAdmin || !gameState || gameState.status !== 'active' || pickInProgress) return;
+  if (el.classList.contains('revealed') || el.classList.contains('removed')) return;
+
+  pickInProgress = true;
+
+  const card = gameState.deck[index];
+  const newTotalDraws = (gameState.totalDraws || 0) + 1;
+  const newRevealed = [...(gameState.revealed || []), index];
+  const newRemoved = [...(gameState.removed || [])];
+  const newFoundItems = [...(gameState.foundItems || [])];
+
+  let resultType, resultData;
+
+  if (isAceOfSpades(card)) {
+    resultType = 'jackpot';
+    resultData = { type: 'jackpot', card: `A♠`, name: currentName };
+  } else if (card.isJoker) {
+    resultType = 'joker';
+    resultData = { type: 'joker', card: `🃏 Joker`, jokerNum: card.jokerNum, name: currentName };
+    newFoundItems.push({ type: 'joker', label: `Joker ${card.jokerNum}` });
+  } else if (isOtherAce(card)) {
+    resultType = 'ace';
+    resultData = { type: 'ace', card: `A${card.suit}`, suit: card.suit, name: currentName };
+    newFoundItems.push({ type: 'ace', label: `A${card.suit}` });
+  } else {
+    resultType = 'miss';
+    resultData = { type: 'miss', card: `${card.rank}${card.suit}`, name: currentName };
+    newRemoved.push(index);
+  }
+
+  // Animate locally first
+  const revealFront = () => {
+    el.querySelector('.card-back').style.display = 'none';
+    const front = el.querySelector('.card-front-face');
+    front.style.backfaceVisibility = 'visible';
+    front.style.transform = 'none';
+  };
+
+  revealFront();
+
+  const spinClass = resultType === 'jackpot' ? 'spin-jackpot' : 'spinning';
+  const spinTime = resultType === 'jackpot' ? 1600 : 1000;
+
+  el.classList.add(spinClass);
+
+  setTimeout(() => {
+    el.classList.add('revealed');
+    if (resultType === 'miss') el.classList.add('removed');
+
+    // Push to Firebase
+    const updates = {
+      revealed: newRevealed,
+      removed: newRemoved,
+      foundItems: newFoundItems,
+      totalDraws: newTotalDraws,
+      lastResult: resultData
+    };
+
+    if (resultType === 'jackpot') {
+      updates.status = 'gameover';
+      updates.gameOver = true;
+      updates.winner = currentName;
+      launchConfetti();
+    } else if (resultType === 'ace') {
+      updates.status = 'bonus';
+    } else {
+      updates.status = 'locked';
+      updates.weekNum = (gameState.weekNum || 1) + 1;
+    }
+
+    gameRef.update(updates);
+
+    // Add to history
+    const cardLabel = card.isJoker ? '🃏 Joker' : `${card.rank}${card.suit}`;
+    let result = '—', resultClass = '';
+    if (resultType === 'jackpot') { result = '🏆 JACKPOT'; resultClass = 'jackpot'; }
+    else if (resultType === 'joker') { result = '🎁 Prize'; resultClass = 'prize'; }
+    else if (resultType === 'ace') { result = '🔄 Go Again'; resultClass = 'bonus'; }
+
+    historyRef.push({
+      name: currentName,
+      cardLabel,
+      type: resultType,
+      result,
+      resultClass,
+      week: gameState.weekNum || 1,
+      draw: newTotalDraws,
+      timestamp: firebase.database.ServerValue.TIMESTAMP
+    });
+
+    // Show admin result overlay
+    showAdminResult(resultType, card, newTotalDraws);
+
+  }, spinTime);
+}
+
+// ===== RESULT OVERLAYS =====
+
+function showAdminResult(type, card, drawNum) {
+  const o = document.getElementById('overlay');
+  const icon = document.getElementById('overlayIcon');
+  const title = document.getElementById('overlayTitle');
+  const sub = document.getElementById('overlaySub');
+  const btns = document.getElementById('overlayBtns');
+
+  if (type === 'jackpot') {
+    icon.textContent = '♠';
+    title.className = 'overlay-title jackpot';
+    title.textContent = '🎉 JACKPOT! 🎉';
+    sub.innerHTML = `<span class="hl-gold">${currentName}</span> found the <span class="hl-gold">Ace of Spades ♠</span>!<br>Draw <span class="hl-gold">${drawNum}</span>, Week <span class="hl-gold">${gameState.weekNum || 1}</span>.`;
+    btns.innerHTML = '<button class="btn" onclick="confirmReset()">New Game</button>';
+  } else if (type === 'joker') {
+    icon.textContent = '🃏';
+    title.className = 'overlay-title joker-win';
+    title.textContent = 'Joker Prize!';
+    sub.innerHTML = `<span class="hl-purple">${currentName}</span> found a <span class="hl-purple">Joker 🃏</span>!<br>Bonus prize won! Jackpot still up for grabs...`;
+    btns.innerHTML = `<button class="btn btn-green" onclick="closeAndLock()">Done — Lock Board</button>`;
+  } else if (type === 'ace') {
+    icon.textContent = card.suit;
+    title.className = 'overlay-title other-ace';
+    title.textContent = 'Ace — Go Again!';
+    sub.innerHTML = `<span class="hl">${currentName}</span> found the <span class="hl">Ace of ${SUIT_NAMES[card.suit]} ${card.suit}</span>!<br>Not the jackpot — <span class="hl-green">another pick</span>!`;
+    btns.innerHTML = `<button class="btn btn-green" onclick="grantBonusPick()">Pick Again</button>`;
+  } else {
+    icon.textContent = card.suit;
+    title.className = 'overlay-title miss';
+    title.textContent = `${card.rank} of ${SUIT_NAMES[card.suit]}`;
+    sub.innerHTML = `Not the Ace. <span class="hl-green">${currentName}</span>'s draw is done.`;
+    btns.innerHTML = `<button class="btn btn-green" onclick="closeAndShowLock()">Done</button>`;
+  }
+
+  setTimeout(() => o.classList.add('active'), type === 'jackpot' ? 300 : 100);
+}
+
+function showSpectatorResult(result) {
+  if (!result) return;
+  const o = document.getElementById('overlay');
+  const icon = document.getElementById('overlayIcon');
+  const title = document.getElementById('overlayTitle');
+  const sub = document.getElementById('overlaySub');
+  const btns = document.getElementById('overlayBtns');
+
+  if (result.type === 'jackpot') {
+    icon.textContent = '♠';
+    title.className = 'overlay-title jackpot';
+    title.textContent = '🎉 JACKPOT! 🎉';
+    sub.innerHTML = `<span class="hl-gold">${result.name}</span> found the <span class="hl-gold">Ace of Spades ♠</span>!`;
+    btns.innerHTML = '<button class="btn" onclick="closeOverlay()">Close</button>';
+    launchConfetti();
+  } else if (result.type === 'joker') {
+    icon.textContent = '🃏';
+    title.className = 'overlay-title joker-win';
+    title.textContent = 'Joker Prize!';
+    sub.innerHTML = `<span class="hl-purple">${result.name}</span> found a <span class="hl-purple">Joker 🃏</span>!`;
+    btns.innerHTML = '<button class="btn" onclick="closeOverlay()">Close</button>';
+  } else if (result.type === 'ace') {
+    icon.textContent = result.suit || '♥';
+    title.className = 'overlay-title other-ace';
+    title.textContent = 'Ace Found!';
+    sub.innerHTML = `<span class="hl">${result.name}</span> found an Ace — they pick again!`;
+    btns.innerHTML = '<button class="btn" onclick="closeOverlay()">Close</button>';
+  } else {
+    icon.textContent = '✗';
+    title.className = 'overlay-title miss';
+    title.textContent = result.card || 'Miss';
+    sub.innerHTML = `<span class="hl-green">${result.name}</span> didn't find the Ace.`;
+    btns.innerHTML = '<button class="btn" onclick="closeOverlay()">Close</button>';
+  }
+
+  setTimeout(() => o.classList.add('active'), 200);
+
+  // Auto-close for spectators after a few seconds
+  setTimeout(() => closeOverlay(), 5000);
+}
+
+function grantBonusPick() {
+  document.getElementById('overlay').classList.remove('active');
+  pickInProgress = false;
+  gameRef.update({ status: 'active', lastResult: null });
+}
+
+function closeAndLock() {
+  document.getElementById('overlay').classList.remove('active');
+  lockForNextDraw();
+}
+
+function closeAndShowLock() {
+  document.getElementById('overlay').classList.remove('active');
+  if (isAdmin) showLockScreen();
+}
+
+function closeOverlay() {
+  document.getElementById('overlay').classList.remove('active');
+}
+
+// ===== CONFETTI =====
+
+function launchConfetti() {
+  const colors = ['#FF3A00','#FFD600','#AA00FF','#00C853','#FF1744','#FFF'];
+  for (let i = 0; i < 100; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.width = (Math.random() * 8 + 5) + 'px';
+    p.style.height = (Math.random() * 8 + 5) + 'px';
+    p.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    p.style.animation = `confettiFall ${Math.random() * 2 + 1.5}s ease-out ${Math.random() * 0.5}s forwards`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 4000);
+  }
+}
+
+// ===== FIRST LOAD =====
+// Check if game exists, if not and admin, init
+gameRef.once('value').then(snap => {
+  document.getElementById('loadingScreen').classList.add('hidden');
+  if (!snap.exists()) {
+    document.getElementById('pinScreen').classList.remove('hidden');
+    // Will init game when first admin logs in
+    const origSubmit = submitPin;
+    submitPin = function() {
+      const pin = document.getElementById('pinInput').value;
+      if (pin === ADMIN_PIN) {
+        initNewGame();
+      }
+      origSubmit.call(this);
+    };
+  } else {
+    document.getElementById('pinScreen').classList.remove('hidden');
+  }
+});
+</script>
+</body>
+</html>
