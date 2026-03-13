@@ -42,92 +42,118 @@
     pointer-events: none; z-index: 0;
   }
 
-  .container {
+  /* ===== PAGE LAYOUT ===== */
+  .page {
     position: relative; z-index: 1;
-    max-width: 1100px; margin: 0 auto;
-    padding: 20px 16px 40px;
+    padding: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
   }
 
-  .header { text-align: center; margin-bottom: 20px; }
+  /* TV MODE: side by side, fill viewport */
+  @media (min-width: 1200px) {
+    .page {
+      max-width: 100%;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      grid-template-rows: auto 1fr;
+      gap: 0 24px;
+      padding: 20px 28px;
+      overflow: hidden;
+    }
+    .top-bar { grid-column: 1 / -1; }
+    .board-area { grid-column: 1; grid-row: 2; overflow: hidden; display: flex; flex-direction: column; }
+    .side-panel { grid-column: 2; grid-row: 2; overflow: hidden; display: flex; flex-direction: column; }
+  }
+
+  @media (min-width: 1800px) {
+    .page { grid-template-columns: 1fr 440px; padding: 24px 36px; gap: 0 32px; }
+  }
+
+  @media (min-width: 2400px) {
+    .page { grid-template-columns: 1fr 560px; padding: 32px 48px; gap: 0 40px; }
+  }
+
+  /* ===== TOP BAR (header + stats + message) ===== */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .header-compact { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 
   .logo {
     font-family: 'Space Mono', monospace;
-    font-size: 44px; font-weight: 700; letter-spacing: -2px;
+    font-size: 36px; font-weight: 700; letter-spacing: -2px;
     color: var(--gxo-orange);
-    text-shadow: 0 0 40px var(--gxo-orange-glow);
+    text-shadow: 0 0 30px var(--gxo-orange-glow);
     line-height: 1;
   }
 
+  .header-text { display: flex; flex-direction: column; }
+
   .subtitle {
     font-family: 'Space Mono', monospace;
-    font-size: 12px; letter-spacing: 5px;
-    text-transform: uppercase; color: var(--gxo-muted); margin-top: 4px;
+    font-size: 10px; letter-spacing: 4px;
+    text-transform: uppercase; color: var(--gxo-muted);
   }
 
-  /* LIVE BADGE */
   .live-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    margin-top: 10px; padding: 4px 12px;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 8px;
     background: rgba(0,200,83,0.1); border: 1px solid rgba(0,200,83,0.25);
-    border-radius: 20px; font-size: 11px; font-weight: 700;
+    border-radius: 20px; font-size: 9px; font-weight: 700;
     font-family: 'Space Mono', monospace; color: var(--gxo-green);
     letter-spacing: 2px; text-transform: uppercase;
   }
 
   .live-dot {
-    width: 7px; height: 7px; border-radius: 50%;
+    width: 6px; height: 6px; border-radius: 50%;
     background: var(--gxo-green);
     animation: livePulse 1.5s ease-in-out infinite;
   }
 
   @keyframes livePulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--gxo-green); }
-    50% { opacity: 0.4; box-shadow: none; }
+    0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
   }
 
-  .spectator-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    margin-top: 8px; padding: 4px 12px;
-    background: rgba(255,58,0,0.08); border: 1px solid rgba(255,58,0,0.15);
-    border-radius: 20px; font-size: 10px; font-weight: 600;
-    font-family: 'Space Mono', monospace; color: var(--gxo-muted);
-    letter-spacing: 1px;
-  }
-
-  /* STATS */
-  .stats-bar {
-    display: flex; justify-content: center; gap: 24px;
-    margin-bottom: 16px; padding: 14px 20px;
+  /* Stats inline */
+  .stats-inline {
+    display: flex; gap: 16px; align-items: center;
+    padding: 8px 16px;
     background: var(--gxo-card); border: 1px solid var(--gxo-border);
-    border-radius: 10px; flex-wrap: wrap;
+    border-radius: 8px; flex-shrink: 0;
   }
 
-  .stat { text-align: center; min-width: 60px; }
+  .si-item { text-align: center; }
 
-  .stat-label {
-    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  .si-label {
+    font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
     color: var(--gxo-muted); font-family: 'Space Mono', monospace;
   }
 
-  .stat-val {
-    font-size: 24px; font-weight: 800;
-    font-variant-numeric: tabular-nums; line-height: 1.3;
+  .si-val {
+    font-size: 20px; font-weight: 800;
+    font-variant-numeric: tabular-nums; line-height: 1.2;
   }
 
-  .stat-val.orange { color: var(--gxo-orange); }
-  .stat-val.white { color: var(--gxo-text); }
-  .stat-val.green { color: var(--gxo-green); }
-  .stat-divider { width: 1px; background: var(--gxo-border); }
+  .si-val.orange { color: var(--gxo-orange); }
+  .si-val.white { color: var(--gxo-text); }
+  .si-val.green { color: var(--gxo-green); }
+  .si-divider { width: 1px; height: 28px; background: var(--gxo-border); }
 
-  /* MESSAGE */
+  /* Message bar inline */
   .message-bar {
-    text-align: center; padding: 14px 16px; margin-bottom: 16px;
+    flex: 1; min-width: 200px;
+    text-align: center; padding: 10px 14px;
     background: linear-gradient(135deg, rgba(255,58,0,0.07), rgba(255,58,0,0.01));
-    border: 1px solid rgba(255,58,0,0.12); border-radius: 10px;
-    font-size: 15px; color: var(--gxo-text);
-    min-height: 48px; display: flex; align-items: center;
-    justify-content: center; line-height: 1.4;
-    white-space: pre-wrap; word-spacing: normal;
+    border: 1px solid rgba(255,58,0,0.12); border-radius: 8px;
+    font-size: 14px; color: var(--gxo-text);
+    display: flex; align-items: center; justify-content: center; line-height: 1.3;
   }
 
   .hl { color: var(--gxo-orange); font-weight: 700; }
@@ -135,32 +161,33 @@
   .hl-purple { color: var(--gxo-purple); font-weight: 700; }
   .hl-green { color: var(--gxo-green); font-weight: 700; }
 
-  /* FOUND ROW */
+  /* Found badges */
   .found-row {
-    display: flex; justify-content: center; gap: 8px;
-    margin-bottom: 14px; min-height: 6px; flex-wrap: wrap;
+    display: flex; justify-content: center; gap: 6px;
+    margin-bottom: 8px; min-height: 4px; flex-wrap: wrap;
   }
 
   .found-badge {
-    padding: 4px 10px; border-radius: 6px;
-    font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 5px;
+    font-size: 10px; font-weight: 700;
     font-family: 'Space Mono', monospace;
-    animation: badgePop 0.3s ease-out;
   }
 
   .found-badge.ace { background: rgba(255,58,0,0.15); color: var(--gxo-orange); border: 1px solid rgba(255,58,0,0.3); }
   .found-badge.joker { background: rgba(170,0,255,0.15); color: var(--gxo-purple); border: 1px solid rgba(170,0,255,0.3); }
 
-  @keyframes badgePop { 0% { transform: scale(0); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
-
-  /* CARD GRID */
+  /* ===== CARD GRID ===== */
   .card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
-    gap: 10px; margin-bottom: 24px;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 8px;
+    flex: 1;
+    align-content: start;
   }
 
-  @media (min-width: 700px) { .card-grid { grid-template-columns: repeat(9, 1fr); } }
+  @media (max-width: 600px) {
+    .card-grid { grid-template-columns: repeat(6, 1fr); gap: 5px; }
+  }
 
   .card-slot {
     aspect-ratio: 2.5 / 3.5; perspective: 800px;
@@ -229,7 +256,7 @@
 
   .card-back-txt {
     font-family: 'Space Mono', monospace;
-    font-size: 11px; font-weight: 700;
+    font-size: 10px; font-weight: 700;
     color: var(--gxo-orange); opacity: 0.35;
   }
 
@@ -258,36 +285,139 @@
     box-shadow: 0 0 25px rgba(170,0,255,0.35);
   }
 
-  .cf-rank { font-size: clamp(18px, 4vw, 26px); font-weight: 900; line-height: 1; }
-  .cf-suit { font-size: clamp(16px, 3.5vw, 24px); line-height: 1; margin-top: 1px; }
+  .cf-rank { font-size: clamp(14px, 2.8vw, 30px); font-weight: 900; line-height: 1; }
+  .cf-suit { font-size: clamp(12px, 2.4vw, 26px); line-height: 1; margin-top: 1px; }
 
   .cf-mini {
     position: absolute; top: 3px; left: 4px;
-    font-size: 9px; font-weight: 700; line-height: 1;
+    font-size: clamp(7px, 0.7vw, 12px); font-weight: 700; line-height: 1;
     display: flex; flex-direction: column; align-items: center;
   }
 
-  /* BUTTONS */
+  /* ===== SIDE PANEL (history + admin) ===== */
+  .side-panel {
+    display: flex; flex-direction: column; gap: 14px;
+    margin-top: 20px;
+  }
+
+  @media (min-width: 1200px) {
+    .side-panel { margin-top: 0; }
+  }
+
+  /* ===== DRAW HISTORY ===== */
+  .history-section {
+    background: var(--gxo-card);
+    border: 1px solid var(--gxo-border);
+    border-radius: 10px; overflow: hidden;
+    flex: 1; display: flex; flex-direction: column;
+    min-height: 0;
+  }
+
+  .history-header {
+    padding: 12px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--gxo-muted);
+    border-bottom: 1px solid var(--gxo-border);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0;
+  }
+
+  .history-list { flex: 1; overflow-y: auto; min-height: 0; }
+
+  .history-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 13px;
+  }
+
+  .history-item:last-child { border-bottom: none; }
+  .history-item.new-item { animation: histSlide 0.3s ease-out; }
+
+  @keyframes histSlide { 0% { opacity: 0; transform: translateX(-10px); } 100% { opacity: 1; transform: translateX(0); } }
+
+  .hist-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; color: var(--gxo-muted); min-width: 24px;
+  }
+
+  .hist-name { font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .hist-card {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 4px;
+  }
+
+  .hist-card.normal { background: rgba(255,255,255,0.05); color: var(--gxo-muted); }
+  .hist-card.ace { background: rgba(255,58,0,0.15); color: var(--gxo-orange); }
+  .hist-card.joker { background: rgba(170,0,255,0.15); color: var(--gxo-purple); }
+  .hist-card.jackpot { background: rgba(255,214,0,0.15); color: var(--gxo-gold); }
+
+  .hist-result { font-size: 11px; color: var(--gxo-muted); min-width: 70px; text-align: right; }
+  .hist-result.prize { color: var(--gxo-purple); font-weight: 600; }
+  .hist-result.bonus { color: var(--gxo-orange); font-weight: 600; }
+  .hist-result.jackpot { color: var(--gxo-gold); font-weight: 700; }
+
+  .history-empty {
+    padding: 20px; text-align: center;
+    color: var(--gxo-muted); font-size: 12px;
+  }
+
+  /* ===== ADMIN CONTROLS (in side panel) ===== */
+  .admin-section {
+    background: var(--gxo-card);
+    border: 1px solid var(--gxo-border);
+    border-radius: 10px; padding: 14px;
+    flex-shrink: 0;
+  }
+
+  .admin-section.hidden { display: none; }
+
+  .admin-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gxo-muted); margin-bottom: 8px;
+  }
+
+  .admin-name-input {
+    width: 100%; padding: 10px 12px;
+    background: var(--gxo-darker); border: 2px solid var(--gxo-border);
+    border-radius: 8px; color: var(--gxo-text);
+    font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
+    outline: none; text-align: center; transition: border-color 0.2s;
+  }
+
+  .admin-name-input:focus { border-color: var(--gxo-orange); }
+  .admin-name-input::placeholder { color: #444; font-weight: 400; }
+
+  .admin-btns { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+  /* ===== BUTTONS ===== */
   .btn {
     font-family: 'Space Mono', monospace;
-    font-size: 12px; font-weight: 700;
+    font-size: 11px; font-weight: 700;
     letter-spacing: 2px; text-transform: uppercase;
-    padding: 12px 28px; border: 2px solid var(--gxo-orange);
+    padding: 10px 20px; border: 2px solid var(--gxo-orange);
     border-radius: 8px; background: transparent;
     color: var(--gxo-orange); cursor: pointer; transition: all 0.2s;
+    flex: 1;
   }
 
   .btn:hover { background: var(--gxo-orange); color: var(--gxo-dark); box-shadow: 0 0 25px var(--gxo-orange-glow); }
   .btn:active { transform: scale(0.97); }
   .btn-green { border-color: var(--gxo-green); color: var(--gxo-green); }
   .btn-green:hover { background: var(--gxo-green); color: #000; box-shadow: 0 0 25px rgba(0,200,83,0.4); }
-  .btn-large { font-size: 14px; padding: 16px 40px; }
   .btn-muted { border-color: var(--gxo-muted); color: var(--gxo-muted); }
   .btn-muted:hover { background: var(--gxo-muted); color: #000; box-shadow: none; }
 
-  .controls { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(0,200,83,0.3); }
+    50% { box-shadow: 0 0 40px rgba(0,200,83,0.5); }
+  }
+  .btn-pulse { animation: glowPulse 2s ease-in-out infinite; }
 
-  /* ===== ADMIN PIN SCREEN ===== */
+  /* ===== PIN SCREEN (only overlay) ===== */
   .pin-screen {
     position: fixed; inset: 0;
     background: rgba(5,5,5,0.97);
@@ -301,21 +431,19 @@
   .pin-logo {
     font-family: 'Space Mono', monospace;
     font-size: 36px; font-weight: 700;
-    color: var(--gxo-orange); margin-bottom: 30px;
+    color: var(--gxo-orange); margin-bottom: 24px;
     text-shadow: 0 0 40px var(--gxo-orange-glow);
   }
 
-  .pin-title {
-    font-size: 20px; font-weight: 700; margin-bottom: 6px;
-  }
+  .pin-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
 
   .pin-sub {
-    font-size: 14px; color: var(--gxo-muted); margin-bottom: 24px;
+    font-size: 14px; color: var(--gxo-muted); margin-bottom: 20px;
     line-height: 1.5; max-width: 340px;
   }
 
   .pin-input {
-    width: 200px; padding: 14px 16px;
+    width: 200px; padding: 12px 16px;
     background: var(--gxo-card); border: 2px solid var(--gxo-border);
     border-radius: 8px; color: var(--gxo-text);
     font-family: 'Space Mono', monospace; font-size: 24px;
@@ -326,291 +454,121 @@
 
   .pin-input:focus { border-color: var(--gxo-orange); }
 
-  .pin-error {
-    color: var(--gxo-red); font-size: 13px; margin-top: 10px;
-    height: 20px; font-weight: 600;
-  }
+  .pin-error { color: var(--gxo-red); font-size: 13px; margin-top: 8px; height: 20px; font-weight: 600; }
+  .pin-btns { display: flex; gap: 12px; margin-top: 16px; }
+  .pin-btns .btn { flex: none; }
 
-  .pin-btns { display: flex; gap: 12px; margin-top: 20px; }
-
-  /* ===== LOCK / READY SCREEN (admin only) ===== */
-  .lock-screen {
-    position: fixed; inset: 0;
-    background: rgba(5,5,5,0.97);
-    display: none; align-items: center; justify-content: center;
-    z-index: 50; backdrop-filter: blur(16px);
-    flex-direction: column; text-align: center; padding: 30px;
-  }
-
-  .lock-screen.active { display: flex; }
-
-  .lock-logo {
-    font-family: 'Space Mono', monospace;
-    font-size: 28px; font-weight: 700;
-    color: var(--gxo-orange); opacity: 0.3;
-    position: absolute; top: 24px; left: 50%; transform: translateX(-50%);
-  }
-
-  .lock-week {
-    font-family: 'Space Mono', monospace;
-    font-size: 13px; letter-spacing: 4px; text-transform: uppercase;
-    color: var(--gxo-muted); margin-bottom: 10px;
-  }
-
-  .lock-cards-left {
-    font-family: 'Space Mono', monospace;
-    font-size: 64px; font-weight: 700;
-    color: var(--gxo-orange);
-    text-shadow: 0 0 40px var(--gxo-orange-glow);
-    line-height: 1; margin-bottom: 4px;
-  }
-
-  .lock-cards-label {
-    font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
-    color: var(--gxo-muted); font-family: 'Space Mono', monospace;
-    margin-bottom: 32px;
-  }
-
-  .lock-name-section { margin-bottom: 28px; width: 100%; max-width: 340px; }
-
-  .lock-name-label {
-    font-size: 13px; font-weight: 600; color: var(--gxo-muted);
-    margin-bottom: 10px; text-align: left;
-  }
-
-  .lock-name-input {
-    width: 100%; padding: 14px 16px;
+  /* ===== RESULT POPUP (small, doesn't hide cards) ===== */
+  .result-toast {
+    position: fixed;
+    top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
     background: var(--gxo-card); border: 2px solid var(--gxo-border);
-    border-radius: 8px; color: var(--gxo-text);
-    font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 600;
-    outline: none; text-align: center; transition: border-color 0.2s;
+    border-radius: 16px; padding: 32px 40px;
+    text-align: center; z-index: 150;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    max-width: 420px; width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
   }
 
-  .lock-name-input:focus { border-color: var(--gxo-orange); }
-  .lock-name-input::placeholder { color: #444; font-weight: 400; }
-
-  .lock-info {
-    font-size: 14px; color: var(--gxo-muted); line-height: 1.5;
-    margin-bottom: 8px; max-width: 360px;
+  .result-toast.active {
+    opacity: 1; pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
   }
 
-  /* ===== RESULT OVERLAY ===== */
-  .overlay {
+  .result-toast.jackpot { border-color: var(--gxo-gold); box-shadow: 0 0 60px rgba(255,214,0,0.3), 0 20px 60px rgba(0,0,0,0.6); }
+  .result-toast.joker { border-color: var(--gxo-purple); }
+  .result-toast.ace { border-color: var(--gxo-orange); }
+
+  .rt-icon { font-size: 48px; margin-bottom: 8px; }
+  .rt-title { font-size: 24px; font-weight: 900; margin-bottom: 4px; }
+  .rt-title.t-jackpot { color: var(--gxo-gold); }
+  .rt-title.t-joker { color: var(--gxo-purple); }
+  .rt-title.t-ace { color: var(--gxo-orange); }
+  .rt-title.t-miss { color: var(--gxo-muted); }
+  .rt-sub { font-size: 14px; color: var(--gxo-muted); margin-bottom: 20px; line-height: 1.5; }
+  .rt-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .rt-btns .btn { flex: none; }
+
+  /* Dim backdrop behind toast */
+  .toast-bg {
     position: fixed; inset: 0;
-    background: rgba(5,5,5,0.93);
-    display: none; align-items: center; justify-content: center;
-    z-index: 100; backdrop-filter: blur(12px);
+    background: rgba(0,0,0,0.4);
+    z-index: 140; opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
   }
+  .toast-bg.active { opacity: 1; pointer-events: auto; }
 
-  .overlay.active { display: flex; }
-
-  .overlay-box {
-    text-align: center; padding: 44px 50px;
-    background: var(--gxo-card); border: 1px solid var(--gxo-border);
-    border-radius: 16px; max-width: 460px; margin: 20px;
+  /* ===== LOADING ===== */
+  .loading-screen {
+    position: fixed; inset: 0;
+    background: var(--gxo-darker);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 300; flex-direction: column; gap: 12px;
   }
-
-  .overlay-icon { font-size: 56px; margin-bottom: 12px; }
-
-  .overlay-title { font-size: 28px; font-weight: 900; margin-bottom: 6px; }
-  .overlay-title.jackpot { color: var(--gxo-gold); text-shadow: 0 0 30px rgba(255,214,0,0.4); }
-  .overlay-title.joker-win { color: var(--gxo-purple); }
-  .overlay-title.other-ace { color: var(--gxo-orange); }
-  .overlay-title.miss { color: var(--gxo-muted); }
-
-  .overlay-sub { font-size: 15px; color: var(--gxo-muted); margin-bottom: 28px; line-height: 1.6; }
-  .overlay-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-
-  /* ===== DRAW HISTORY ===== */
-  .history-section {
-    margin-top: 30px; background: var(--gxo-card);
-    border: 1px solid var(--gxo-border); border-radius: 10px; overflow: hidden;
+  .loading-screen.hidden { display: none; }
+  .loading-spinner {
+    width: 36px; height: 36px; border: 3px solid var(--gxo-border);
+    border-top-color: var(--gxo-orange); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
   }
-
-  .history-header {
-    padding: 14px 20px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; letter-spacing: 3px;
-    text-transform: uppercase; color: var(--gxo-muted);
-    border-bottom: 1px solid var(--gxo-border);
-    display: flex; justify-content: space-between; align-items: center;
-  }
-
-  .history-list { max-height: 300px; overflow-y: auto; }
-
-  .history-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.03);
-    font-size: 14px;
-  }
-
-  .history-item:last-child { border-bottom: none; }
-  .history-item.new-item { animation: histSlide 0.3s ease-out; }
-
-  @keyframes histSlide { 0% { opacity: 0; transform: translateX(-10px); } 100% { opacity: 1; transform: translateX(0); } }
-
-  .hist-num {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; color: var(--gxo-muted); min-width: 28px;
-  }
-
-  .hist-name { font-weight: 600; flex: 1; }
-
-  .hist-card {
-    font-family: 'Space Mono', monospace;
-    font-size: 13px; font-weight: 700; padding: 3px 8px; border-radius: 4px;
-  }
-
-  .hist-card.normal { background: rgba(255,255,255,0.05); color: var(--gxo-muted); }
-  .hist-card.ace { background: rgba(255,58,0,0.15); color: var(--gxo-orange); }
-  .hist-card.joker { background: rgba(170,0,255,0.15); color: var(--gxo-purple); }
-  .hist-card.jackpot { background: rgba(255,214,0,0.15); color: var(--gxo-gold); }
-
-  .hist-result { font-size: 12px; color: var(--gxo-muted); min-width: 80px; text-align: right; }
-  .hist-result.prize { color: var(--gxo-purple); font-weight: 600; }
-  .hist-result.bonus { color: var(--gxo-orange); font-weight: 600; }
-  .hist-result.jackpot { color: var(--gxo-gold); font-weight: 700; }
-
-  .history-empty {
-    padding: 20px; text-align: center;
-    color: var(--gxo-muted); font-size: 13px;
-  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* CONFETTI */
   .confetti-piece { position: fixed; z-index: 200; pointer-events: none; opacity: 0; }
-
   @keyframes confettiFall {
     0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
     100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
   }
-
   @keyframes cardAppear {
     0% { opacity: 0; transform: scale(0.8) rotateY(40deg); }
     100% { opacity: 1; transform: scale(1) rotateY(0deg); }
   }
 
-  @keyframes glowPulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(0,200,83,0.3); }
-    50% { box-shadow: 0 0 40px rgba(0,200,83,0.5), 0 0 70px rgba(0,200,83,0.15); }
-  }
-
-  .btn-pulse { animation: glowPulse 2s ease-in-out infinite; }
-
-  /* LOADING */
-  .loading-screen {
-    position: fixed; inset: 0;
-    background: var(--gxo-darker);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 300; flex-direction: column; gap: 16px;
-  }
-
-  .loading-screen.hidden { display: none; }
-
-  .loading-spinner {
-    width: 40px; height: 40px; border: 3px solid var(--gxo-border);
-    border-top-color: var(--gxo-orange); border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  @media (max-width: 500px) {
-    .overlay-box { padding: 30px 24px; }
-    .lock-cards-left { font-size: 50px; }
-    .history-item { padding: 8px 14px; font-size: 13px; gap: 8px; }
-  }
-
-  /* ===== TV / BIG SCREEN MODE (75" TV = 1920x1080 or 3840x2160) ===== */
+  /* ===== TV SCALING ===== */
   @media (min-width: 1200px) {
-    .container { max-width: 1600px; padding: 30px 40px 60px; }
-
-    .logo { font-size: 72px; }
-    .subtitle { font-size: 16px; letter-spacing: 8px; margin-top: 8px; }
-
-    .live-badge { font-size: 14px; padding: 6px 16px; margin-top: 14px; }
-    .spectator-badge { font-size: 13px; padding: 6px 16px; }
-
-    .stats-bar { gap: 50px; padding: 24px 40px; border-radius: 14px; margin-bottom: 24px; }
-    .stat-label { font-size: 14px; letter-spacing: 3px; }
-    .stat-val { font-size: 42px; }
-    .stat-divider { width: 2px; }
-
-    .message-bar { font-size: 22px; padding: 20px 24px; min-height: 68px; border-radius: 14px; margin-bottom: 24px; }
-
-    .found-row { gap: 12px; margin-bottom: 20px; }
-    .found-badge { font-size: 15px; padding: 6px 16px; border-radius: 8px; }
-
-    .card-grid { grid-template-columns: repeat(9, 1fr); gap: 14px; margin-bottom: 32px; }
-
-    .card-back-txt { font-size: 16px; }
-    .card-back-inner { inset: 7px; border-radius: 7px; }
-    .card-face { border-radius: 12px; }
-    .cf-rank { font-size: 32px; }
-    .cf-suit { font-size: 28px; }
-    .cf-mini { font-size: 13px; top: 5px; left: 6px; }
-
-    .btn { font-size: 16px; padding: 16px 36px; border-radius: 10px; letter-spacing: 3px; }
-    .btn-large { font-size: 18px; padding: 20px 50px; }
-
-    .history-section { margin-top: 40px; border-radius: 14px; }
-    .history-header { padding: 18px 28px; font-size: 14px; }
-    .history-list { max-height: 360px; }
-    .history-item { padding: 14px 28px; font-size: 18px; gap: 16px; }
-    .hist-num { font-size: 14px; min-width: 36px; }
-    .hist-card { font-size: 16px; padding: 4px 12px; }
-    .hist-result { font-size: 15px; min-width: 100px; }
-
-    .overlay-box { padding: 60px 70px; max-width: 600px; border-radius: 20px; }
-    .overlay-icon { font-size: 80px; margin-bottom: 16px; }
-    .overlay-title { font-size: 40px; }
-    .overlay-sub { font-size: 20px; margin-bottom: 36px; }
-
-    .lock-logo { font-size: 40px; }
-    .lock-week { font-size: 18px; letter-spacing: 6px; }
-    .lock-cards-left { font-size: 100px; }
-    .lock-cards-label { font-size: 16px; letter-spacing: 4px; margin-bottom: 44px; }
-    .lock-name-section { max-width: 460px; margin-bottom: 36px; }
-    .lock-name-label { font-size: 18px; margin-bottom: 14px; }
-    .lock-name-input { font-size: 26px; padding: 18px 20px; border-radius: 12px; }
-    .lock-info { font-size: 20px; margin-bottom: 12px; }
-
-    .pin-logo { font-size: 56px; }
-    .pin-title { font-size: 28px; }
-    .pin-sub { font-size: 18px; max-width: 460px; }
-    .pin-input { font-size: 32px; width: 260px; padding: 18px 20px; }
-    .pin-error { font-size: 16px; }
-
-    .loading-spinner { width: 60px; height: 60px; border-width: 4px; }
+    .logo { font-size: 48px; }
+    .subtitle { font-size: 13px; }
+    .live-badge { font-size: 11px; }
+    .si-label { font-size: 10px; }
+    .si-val { font-size: 28px; }
+    .message-bar { font-size: 18px; padding: 14px 18px; }
+    .found-badge { font-size: 12px; padding: 4px 10px; }
+    .card-back-txt { font-size: 14px; }
+    .history-item { font-size: 15px; padding: 11px 18px; }
+    .hist-num { font-size: 12px; }
+    .hist-card { font-size: 14px; }
+    .hist-result { font-size: 13px; }
+    .admin-name-input { font-size: 18px; }
+    .btn { font-size: 12px; }
+    .result-toast { padding: 40px 50px; }
+    .rt-icon { font-size: 56px; }
+    .rt-title { font-size: 30px; }
+    .rt-sub { font-size: 17px; }
   }
 
-  /* Extra large — 4K TVs */
   @media (min-width: 2400px) {
-    .container { max-width: 2800px; padding: 50px 80px 80px; }
-    .logo { font-size: 110px; }
-    .subtitle { font-size: 22px; letter-spacing: 12px; }
-    .stats-bar { gap: 80px; padding: 36px 60px; }
-    .stat-label { font-size: 18px; }
-    .stat-val { font-size: 64px; }
-    .message-bar { font-size: 32px; padding: 28px 32px; min-height: 90px; }
-    .card-grid { gap: 20px; }
-    .cf-rank { font-size: 44px; }
-    .cf-suit { font-size: 38px; }
-    .cf-mini { font-size: 16px; top: 8px; left: 8px; }
-    .card-back-txt { font-size: 22px; }
-    .btn { font-size: 20px; padding: 20px 44px; }
-    .btn-large { font-size: 24px; padding: 26px 60px; }
-    .overlay-box { max-width: 800px; padding: 80px 90px; }
-    .overlay-icon { font-size: 100px; }
-    .overlay-title { font-size: 56px; }
-    .overlay-sub { font-size: 26px; }
-    .history-item { padding: 18px 36px; font-size: 24px; }
-    .lock-cards-left { font-size: 140px; }
-    .lock-name-input { font-size: 34px; padding: 24px; }
-    .lock-info { font-size: 26px; }
-    .pin-logo { font-size: 80px; }
-    .pin-title { font-size: 38px; }
-    .pin-input { font-size: 42px; width: 320px; }
+    .logo { font-size: 72px; }
+    .subtitle { font-size: 18px; letter-spacing: 8px; }
+    .si-val { font-size: 40px; }
+    .si-label { font-size: 13px; }
+    .message-bar { font-size: 26px; padding: 18px 24px; }
+    .card-back-txt { font-size: 20px; }
+    .card-face { border-radius: 12px; }
+    .found-badge { font-size: 16px; padding: 6px 14px; }
+    .history-item { font-size: 20px; padding: 14px 24px; }
+    .hist-card { font-size: 18px; }
+    .admin-name-input { font-size: 24px; padding: 14px 16px; }
+    .btn { font-size: 16px; padding: 14px 28px; }
+    .result-toast { max-width: 600px; padding: 56px 64px; }
+    .rt-icon { font-size: 72px; }
+    .rt-title { font-size: 42px; }
+    .rt-sub { font-size: 22px; }
+  }
+
+  @media (max-width: 600px) {
+    .top-bar { flex-direction: column; align-items: stretch; gap: 8px; }
+    .stats-inline { justify-content: center; }
   }
 </style>
 </head>
@@ -619,92 +577,95 @@
 <!-- LOADING -->
 <div class="loading-screen" id="loadingScreen">
   <div class="loading-spinner"></div>
-  <div style="color:var(--gxo-muted);font-size:13px;font-family:'Space Mono',monospace;">Connecting...</div>
+  <div style="color:var(--gxo-muted);font-size:12px;font-family:'Space Mono',monospace;">Connecting...</div>
 </div>
 
-<!-- ADMIN PIN SCREEN -->
+<!-- PIN SCREEN -->
 <div class="pin-screen hidden" id="pinScreen">
   <div class="pin-logo">GXO</div>
   <div class="pin-title">Chase the Ace</div>
-  <div class="pin-sub">Enter the admin PIN to run draws, or watch as a spectator</div>
+  <div class="pin-sub">Enter admin PIN to run draws, or watch as a spectator</div>
   <input class="pin-input" id="pinInput" type="password" maxlength="6" placeholder="••••" autocomplete="off" />
   <div class="pin-error" id="pinError"></div>
   <div class="pin-btns">
-    <button class="btn btn-green" onclick="submitPin()">Enter as Admin</button>
-    <button class="btn-muted btn" onclick="enterSpectator()">Watch Live</button>
+    <button class="btn btn-green" onclick="submitPin()">Admin</button>
+    <button class="btn btn-muted" onclick="enterSpectator()">Watch Live</button>
   </div>
 </div>
 
-<!-- LOCK / READY SCREEN (admin only) -->
-<div class="lock-screen" id="lockScreen">
-  <div class="lock-logo">GXO</div>
-  <div class="lock-week" id="lockWeek">Week 1</div>
-  <div class="lock-cards-left" id="lockCardsLeft">54</div>
-  <div class="lock-cards-label">cards remaining</div>
-  <div class="lock-name-section">
-    <div class="lock-name-label">This week's picker</div>
-    <input class="lock-name-input" id="nameInput" type="text" placeholder="Enter name..." maxlength="30" autocomplete="off" onkeydown="if(event.key==='Enter')unlockTurn()" />
-  </div>
-  <div class="lock-info">Pick <strong>one card</strong> to find the <span class="hl-gold">Ace of Spades ♠</span></div>
-  <button class="btn btn-green btn-large btn-pulse" onclick="unlockTurn()">Pick a Card</button>
+<!-- RESULT TOAST (floats over cards, doesn't hide them) -->
+<div class="toast-bg" id="toastBg" onclick="closeToast()"></div>
+<div class="result-toast" id="resultToast">
+  <div class="rt-icon" id="rtIcon"></div>
+  <div class="rt-title" id="rtTitle"></div>
+  <div class="rt-sub" id="rtSub"></div>
+  <div class="rt-btns" id="rtBtns"></div>
 </div>
 
-<!-- RESULT OVERLAY -->
-<div class="overlay" id="overlay">
-  <div class="overlay-box">
-    <div class="overlay-icon" id="overlayIcon"></div>
-    <div class="overlay-title" id="overlayTitle"></div>
-    <div class="overlay-sub" id="overlaySub"></div>
-    <div class="overlay-btns" id="overlayBtns"></div>
-  </div>
-</div>
+<!-- PAGE -->
+<div class="page">
 
-<!-- GAME -->
-<div class="container">
-  <div class="header">
-    <div class="logo">GXO</div>
-    <div class="subtitle">Chase the Ace</div>
-    <div class="live-badge"><div class="live-dot"></div> Live</div>
-    <div class="spectator-badge" id="modeBadge">Admin</div>
-  </div>
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="header-compact">
+      <div class="logo">GXO</div>
+      <div class="header-text">
+        <div class="subtitle">Chase the Ace</div>
+        <div class="live-badge"><div class="live-dot"></div> Live</div>
+      </div>
+    </div>
 
-  <div class="stats-bar">
-    <div class="stat">
-      <div class="stat-label">Cards Left</div>
-      <div class="stat-val orange" id="cardsLeft">54</div>
+    <div class="stats-inline">
+      <div class="si-item">
+        <div class="si-label">Cards</div>
+        <div class="si-val orange" id="cardsLeft">54</div>
+      </div>
+      <div class="si-divider"></div>
+      <div class="si-item">
+        <div class="si-label">Week</div>
+        <div class="si-val green" id="weekNum">1</div>
+      </div>
+      <div class="si-divider"></div>
+      <div class="si-item">
+        <div class="si-label">Draws</div>
+        <div class="si-val white" id="totalDraws">0</div>
+      </div>
     </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <div class="stat-label">Week</div>
-      <div class="stat-val green" id="weekNum">1</div>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <div class="stat-label">Draws</div>
-      <div class="stat-val white" id="totalDraws">0</div>
-    </div>
+
+    <div class="message-bar" id="message">Connecting...</div>
   </div>
 
-  <div class="message-bar" id="message">Connecting...</div>
-
-  <div class="found-row" id="foundRow"></div>
-  <div class="card-grid" id="cardGrid"></div>
-
-  <div class="controls" id="adminControls" style="display:none;">
-    <button class="btn" onclick="lockForNextDraw()">Lock Board</button>
-    <button class="btn btn-muted" onclick="confirmReset()">Reset Game</button>
+  <!-- BOARD AREA (cards) -->
+  <div class="board-area">
+    <div class="found-row" id="foundRow"></div>
+    <div class="card-grid" id="cardGrid"></div>
   </div>
 
-  <!-- DRAW HISTORY -->
-  <div class="history-section">
-    <div class="history-header">
-      <span>Draw History</span>
-      <span id="histCount">0 draws</span>
+  <!-- SIDE PANEL (history + admin controls) -->
+  <div class="side-panel">
+    <!-- Admin controls -->
+    <div class="admin-section hidden" id="adminSection">
+      <div class="admin-label">This week's picker</div>
+      <input class="admin-name-input" id="nameInput" type="text" placeholder="Enter name..." maxlength="30" autocomplete="off" onkeydown="if(event.key==='Enter')unlockTurn()" />
+      <div class="admin-btns">
+        <button class="btn btn-green btn-pulse" id="goBtn" onclick="unlockTurn()">Pick a Card</button>
+        <button class="btn" onclick="lockForNextDraw()">Lock</button>
+        <button class="btn btn-muted" onclick="confirmReset()">Reset</button>
+      </div>
     </div>
-    <div class="history-list" id="historyList">
-      <div class="history-empty">No draws yet</div>
+
+    <!-- Draw history -->
+    <div class="history-section">
+      <div class="history-header">
+        <span>Draw History</span>
+        <span id="histCount">0 draws</span>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">No draws yet</div>
+      </div>
     </div>
   </div>
+
 </div>
 
 <!-- FIREBASE SDK -->
@@ -713,7 +674,7 @@
 
 <script>
 // =====================================================
-// FIREBASE CONFIG — REPLACE THESE WITH YOUR VALUES
+// FIREBASE CONFIG
 // =====================================================
 const firebaseConfig = {
   apiKey: "AIzaSyDJoo6khQ59s_BG0tfE4pmaWytncRN64Ao",
@@ -725,7 +686,7 @@ const firebaseConfig = {
   appId: "1:662987665662:web:34cf928b2b564b850675af"
 };
 
-// ADMIN PIN — change this to whatever you want
+// ADMIN PIN
 const ADMIN_PIN = "1234";
 
 // =====================================================
@@ -735,7 +696,6 @@ const db = firebase.database();
 const gameRef = db.ref('game');
 const historyRef = db.ref('history');
 
-// ===== STATE =====
 const SUITS = ['♠','♥','♦','♣'];
 const SUIT_NAMES = {'♠':'Spades','♥':'Hearts','♦':'Diamonds','♣':'Clubs'};
 const RED_SUITS = new Set(['♥','♦']);
@@ -748,18 +708,13 @@ let currentName = '';
 let pickInProgress = false;
 let lastRevealedCount = 0;
 
-// ===== PIN / AUTH =====
-
+// ===== PIN =====
 function submitPin() {
   const pin = document.getElementById('pinInput').value;
   if (pin === ADMIN_PIN) {
     isAdmin = true;
     document.getElementById('pinScreen').classList.add('hidden');
-    document.getElementById('modeBadge').textContent = 'Admin';
-    document.getElementById('adminControls').style.display = 'flex';
-    if (gameState && gameState.status === 'locked') {
-      showLockScreen();
-    }
+    document.getElementById('adminSection').classList.remove('hidden');
   } else {
     document.getElementById('pinError').textContent = 'Wrong PIN';
     document.getElementById('pinInput').value = '';
@@ -770,8 +725,7 @@ function submitPin() {
 function enterSpectator() {
   isAdmin = false;
   document.getElementById('pinScreen').classList.add('hidden');
-  document.getElementById('modeBadge').textContent = 'Spectator';
-  document.getElementById('adminControls').style.display = 'none';
+  document.getElementById('adminSection').classList.add('hidden');
 }
 
 document.getElementById('pinInput').addEventListener('keydown', e => {
@@ -779,7 +733,6 @@ document.getElementById('pinInput').addEventListener('keydown', e => {
 });
 
 // ===== DECK =====
-
 function buildDeck() {
   const deck = [];
   for (const suit of SUITS) {
@@ -804,41 +757,31 @@ function isAceOfSpades(c) { return c.rank === 'A' && c.suit === '♠'; }
 function isOtherAce(c) { return c.rank === 'A' && c.suit !== '♠' && !c.isJoker; }
 
 // ===== RENDER =====
-
 function renderDeck(deck, revealed, removed) {
   const grid = document.getElementById('cardGrid');
   grid.innerHTML = '';
-
   deck.forEach((card, i) => {
     const slot = document.createElement('div');
     slot.className = 'card-slot';
-    slot.style.animationDelay = `${i * 0.012}s`;
-
+    slot.style.animationDelay = `${i * 0.01}s`;
     const isRed = RED_SUITS.has(card.suit);
     let fc = 'card-front-face';
     if (isRed) fc += ' red';
     if (isAceOfSpades(card)) fc += ' is-ace-spades';
     else if (isOtherAce(card)) fc += ' is-other-ace';
     else if (card.isJoker) fc += ' is-joker';
-
     const miniTxt = card.isJoker ? '🃏' : `${card.rank}<br>${card.suit}`;
     const isRevealed = revealed && revealed.includes(i);
     const isRemoved = removed && removed.includes(i);
-
     const el = document.createElement('div');
     el.className = 'card';
-
-    // Apply state
     if (isRevealed || isRemoved) {
       el.classList.add('revealed');
       if (isRemoved) el.classList.add('removed');
     }
-
-    // Lock cards for spectators or when board is locked
     if (!isAdmin || !gameState || gameState.status !== 'active') {
       el.classList.add('locked');
     }
-
     el.dataset.index = i;
     el.innerHTML = `
       <div class="card-face card-back" ${(isRevealed || isRemoved) ? 'style="display:none"' : ''}>
@@ -850,7 +793,6 @@ function renderDeck(deck, revealed, removed) {
         <div class="cf-suit">${card.suit}</div>
       </div>
     `;
-
     el.addEventListener('click', () => pickCard(i, el));
     slot.appendChild(el);
     grid.appendChild(slot);
@@ -861,22 +803,18 @@ function renderHistory() {
   const list = document.getElementById('historyList');
   const count = document.getElementById('histCount');
   count.textContent = `${historyData.length} draw${historyData.length !== 1 ? 's' : ''}`;
-
   if (historyData.length === 0) {
     list.innerHTML = '<div class="history-empty">No draws yet</div>';
     return;
   }
-
   list.innerHTML = historyData.map((h, i) => {
-    const cardClass = h.type === 'jackpot' ? 'jackpot' : h.type === 'joker' ? 'joker' : h.type === 'ace' ? 'ace' : 'normal';
-    return `
-      <div class="history-item ${i === 0 ? 'new-item' : ''}">
-        <span class="hist-num">#${h.draw}</span>
-        <span class="hist-name">${h.name}</span>
-        <span class="hist-card ${cardClass}">${h.cardLabel}</span>
-        <span class="hist-result ${h.resultClass}">${h.result}</span>
-      </div>
-    `;
+    const cc = h.type === 'jackpot' ? 'jackpot' : h.type === 'joker' ? 'joker' : h.type === 'ace' ? 'ace' : 'normal';
+    return `<div class="history-item ${i === 0 ? 'new-item' : ''}">
+      <span class="hist-num">#${h.draw}</span>
+      <span class="hist-name">${h.name}</span>
+      <span class="hist-card ${cc}">${h.cardLabel}</span>
+      <span class="hist-result ${h.resultClass}">${h.result}</span>
+    </div>`;
   }).join('');
 }
 
@@ -893,69 +831,44 @@ function updateFoundRow(foundItems) {
 }
 
 function updateStatsUI(state) {
-  const revealed = state.revealed || [];
-  const removed = state.removed || [];
-  const remaining = 54 - revealed.length - removed.length + revealed.filter(i => removed.includes(i)).length;
-  // More accurate: removed is subset of revealed, so remaining = 54 - revealed.length
-  document.getElementById('cardsLeft').textContent = 54 - revealed.length;
+  document.getElementById('cardsLeft').textContent = 54 - (state.revealed || []).length;
   document.getElementById('weekNum').textContent = state.weekNum || 1;
   document.getElementById('totalDraws').textContent = state.totalDraws || 0;
 }
 
-function setMessage(html) {
-  document.getElementById('message').innerHTML = html;
-}
+function setMessage(html) { document.getElementById('message').innerHTML = html; }
 
 // ===== FIREBASE LISTENERS =====
-
 gameRef.on('value', snapshot => {
   const data = snapshot.val();
   if (!data) {
-    // No game exists — init if admin
     document.getElementById('loadingScreen').classList.add('hidden');
     document.getElementById('pinScreen').classList.remove('hidden');
     return;
   }
-
   gameState = data;
-
-  // Hide loading
   document.getElementById('loadingScreen').classList.add('hidden');
 
-  // Show pin screen if not yet authed
-  if (!isAdmin && document.getElementById('pinScreen').classList.contains('hidden') === false) {
-    // Already showing pin screen, leave it
-  }
-
-  // Detect if a NEW card was just revealed (for spectator animations)
   const newRevealedCount = (data.revealed || []).length;
   const justRevealed = newRevealedCount > lastRevealedCount && lastRevealedCount > 0;
   lastRevealedCount = newRevealedCount;
 
-  // Render the board
   renderDeck(data.deck, data.revealed || [], data.removed || []);
   updateStatsUI(data);
   updateFoundRow(data.foundItems || []);
 
-  // Handle status-specific UI
   if (data.status === 'locked') {
-    setMessage('Board is locked — waiting for next draw');
-    if (isAdmin) showLockScreen();
+    setMessage('Board locked — waiting for next draw');
   } else if (data.status === 'active') {
     setMessage(`<span class="hl-green">${data.currentName || 'Someone'}</span> is picking — find the <span class="hl-gold">Ace of Spades ♠</span>`);
-    document.getElementById('lockScreen').classList.remove('active');
+  } else if (data.status === 'bonus') {
+    setMessage(`<span class="hl-green">${data.currentName || 'Someone'}</span> found an Ace — picking again!`);
   } else if (data.status === 'gameover') {
-    setMessage(`<span class="hl-gold">JACKPOT WON</span> by <span class="hl-gold">${data.winner || 'someone'}</span>! Game over.`);
+    setMessage(`<span class="hl-gold">JACKPOT WON</span> by <span class="hl-gold">${data.winner || 'someone'}</span>!`);
   }
 
-  // If a card was just picked and we're spectator, show the result
   if (justRevealed && !isAdmin && data.lastResult) {
-    showSpectatorResult(data.lastResult);
-  }
-
-  // If spectator and game status is active with bonus, show message
-  if (data.status === 'bonus' && !isAdmin) {
-    setMessage(`<span class="hl-green">${data.currentName}</span> found an Ace — picking again!`);
+    showToast(data.lastResult, false);
   }
 });
 
@@ -965,7 +878,6 @@ historyRef.on('value', snapshot => {
   renderHistory();
 });
 
-// Show pin screen after loading
 setTimeout(() => {
   if (!gameState) {
     document.getElementById('loadingScreen').classList.add('hidden');
@@ -974,37 +886,17 @@ setTimeout(() => {
 }, 3000);
 
 // ===== GAME INIT =====
-
 function initNewGame() {
   const deck = buildDeck();
-  const state = {
-    deck,
-    revealed: [],
-    removed: [],
-    foundItems: [],
-    weekNum: 1,
-    totalDraws: 0,
-    status: 'locked',
-    gameOver: false,
-    currentName: '',
-    winner: null,
-    lastResult: null
-  };
-  gameRef.set(state);
+  gameRef.set({
+    deck, revealed: [], removed: [], foundItems: [],
+    weekNum: 1, totalDraws: 0, status: 'locked',
+    gameOver: false, currentName: '', winner: null, lastResult: null
+  });
   historyRef.remove();
 }
 
 // ===== ADMIN ACTIONS =====
-
-function showLockScreen() {
-  if (!isAdmin || !gameState) return;
-  const remaining = 54 - (gameState.revealed || []).length;
-  document.getElementById('lockCardsLeft').textContent = remaining;
-  document.getElementById('lockWeek').textContent = `Week ${gameState.weekNum || 1}`;
-  document.getElementById('nameInput').value = '';
-  document.getElementById('lockScreen').classList.add('active');
-}
-
 function unlockTurn() {
   if (!isAdmin) return;
   const name = document.getElementById('nameInput').value.trim();
@@ -1016,39 +908,32 @@ function unlockTurn() {
     return;
   }
   currentName = name;
-  document.getElementById('lockScreen').classList.remove('active');
   pickInProgress = false;
-
-  gameRef.update({
-    status: 'active',
-    currentName: name,
-    lastResult: null
-  });
+  gameRef.update({ status: 'active', currentName: name, lastResult: null });
 }
 
 function lockForNextDraw() {
   if (!isAdmin || !gameState || gameState.gameOver) return;
+  document.getElementById('nameInput').value = '';
   gameRef.update({
     status: 'locked',
     weekNum: (gameState.weekNum || 1) + 1,
-    currentName: '',
-    lastResult: null
+    currentName: '', lastResult: null
   });
 }
 
 function confirmReset() {
   if (!isAdmin) return;
-  if (gameState && gameState.gameOver || confirm('Reset the game? This will reshuffle all 54 cards and clear history.')) {
+  if (gameState && gameState.gameOver || confirm('Reset game? Reshuffles all cards and clears history.')) {
+    document.getElementById('nameInput').value = '';
     initNewGame();
   }
 }
 
 // ===== PICK CARD =====
-
 function pickCard(index, el) {
   if (!isAdmin || !gameState || gameState.status !== 'active' || pickInProgress) return;
   if (el.classList.contains('revealed') || el.classList.contains('removed')) return;
-
   pickInProgress = true;
 
   const card = gameState.deck[index];
@@ -1058,13 +943,12 @@ function pickCard(index, el) {
   const newFoundItems = [...(gameState.foundItems || [])];
 
   let resultType, resultData;
-
   if (isAceOfSpades(card)) {
     resultType = 'jackpot';
-    resultData = { type: 'jackpot', card: `A♠`, name: currentName };
+    resultData = { type: 'jackpot', card: 'A♠', name: currentName };
   } else if (card.isJoker) {
     resultType = 'joker';
-    resultData = { type: 'joker', card: `🃏 Joker`, jokerNum: card.jokerNum, name: currentName };
+    resultData = { type: 'joker', card: '🃏 Joker', jokerNum: card.jokerNum, name: currentName };
     newFoundItems.push({ type: 'joker', label: `Joker ${card.jokerNum}` });
   } else if (isOtherAce(card)) {
     resultType = 'ace';
@@ -1076,38 +960,30 @@ function pickCard(index, el) {
     newRemoved.push(index);
   }
 
-  // Animate locally first
-  const revealFront = () => {
-    el.querySelector('.card-back').style.display = 'none';
-    const front = el.querySelector('.card-front-face');
-    front.style.backfaceVisibility = 'visible';
-    front.style.transform = 'none';
-  };
-
-  revealFront();
+  // Animate locally
+  el.querySelector('.card-back').style.display = 'none';
+  const front = el.querySelector('.card-front-face');
+  front.style.backfaceVisibility = 'visible';
+  front.style.transform = 'none';
 
   const spinClass = resultType === 'jackpot' ? 'spin-jackpot' : 'spinning';
   const spinTime = resultType === 'jackpot' ? 1600 : 1000;
-
   el.classList.add(spinClass);
+
+  // Lock all other cards
+  document.querySelectorAll('.card').forEach(c => c.classList.add('locked'));
 
   setTimeout(() => {
     el.classList.add('revealed');
     if (resultType === 'miss') el.classList.add('removed');
 
-    // Push to Firebase
     const updates = {
-      revealed: newRevealed,
-      removed: newRemoved,
-      foundItems: newFoundItems,
-      totalDraws: newTotalDraws,
+      revealed: newRevealed, removed: newRemoved,
+      foundItems: newFoundItems, totalDraws: newTotalDraws,
       lastResult: resultData
     };
-
     if (resultType === 'jackpot') {
-      updates.status = 'gameover';
-      updates.gameOver = true;
-      updates.winner = currentName;
+      updates.status = 'gameover'; updates.gameOver = true; updates.winner = currentName;
       launchConfetti();
     } else if (resultType === 'ace') {
       updates.status = 'bonus';
@@ -1115,134 +991,111 @@ function pickCard(index, el) {
       updates.status = 'locked';
       updates.weekNum = (gameState.weekNum || 1) + 1;
     }
-
     gameRef.update(updates);
 
-    // Add to history
     const cardLabel = card.isJoker ? '🃏 Joker' : `${card.rank}${card.suit}`;
     let result = '—', resultClass = '';
     if (resultType === 'jackpot') { result = '🏆 JACKPOT'; resultClass = 'jackpot'; }
     else if (resultType === 'joker') { result = '🎁 Prize'; resultClass = 'prize'; }
     else if (resultType === 'ace') { result = '🔄 Go Again'; resultClass = 'bonus'; }
-
     historyRef.push({
-      name: currentName,
-      cardLabel,
-      type: resultType,
-      result,
-      resultClass,
-      week: gameState.weekNum || 1,
-      draw: newTotalDraws,
-      timestamp: firebase.database.ServerValue.TIMESTAMP
+      name: currentName, cardLabel, type: resultType,
+      result, resultClass, week: gameState.weekNum || 1,
+      draw: newTotalDraws, timestamp: firebase.database.ServerValue.TIMESTAMP
     });
 
-    // Show admin result overlay
-    showAdminResult(resultType, card, newTotalDraws);
-
+    showToast(resultData, true);
   }, spinTime);
 }
 
-// ===== RESULT OVERLAYS =====
+// ===== TOAST (result popup) =====
+function showToast(result, isAdminAction) {
+  const toast = document.getElementById('resultToast');
+  const bg = document.getElementById('toastBg');
+  const icon = document.getElementById('rtIcon');
+  const title = document.getElementById('rtTitle');
+  const sub = document.getElementById('rtSub');
+  const btns = document.getElementById('rtBtns');
 
-function showAdminResult(type, card, drawNum) {
-  const o = document.getElementById('overlay');
-  const icon = document.getElementById('overlayIcon');
-  const title = document.getElementById('overlayTitle');
-  const sub = document.getElementById('overlaySub');
-  const btns = document.getElementById('overlayBtns');
-
-  if (type === 'jackpot') {
-    icon.textContent = '♠';
-    title.className = 'overlay-title jackpot';
-    title.textContent = '🎉 JACKPOT! 🎉';
-    sub.innerHTML = `<span class="hl-gold">${currentName}</span> found the <span class="hl-gold">Ace of Spades ♠</span>!<br>Draw <span class="hl-gold">${drawNum}</span>, Week <span class="hl-gold">${gameState.weekNum || 1}</span>.`;
-    btns.innerHTML = '<button class="btn" onclick="confirmReset()">New Game</button>';
-  } else if (type === 'joker') {
-    icon.textContent = '🃏';
-    title.className = 'overlay-title joker-win';
-    title.textContent = 'Joker Prize!';
-    sub.innerHTML = `<span class="hl-purple">${currentName}</span> found a <span class="hl-purple">Joker 🃏</span>!<br>Bonus prize won! Jackpot still up for grabs...`;
-    btns.innerHTML = `<button class="btn btn-green" onclick="closeAndLock()">Done — Lock Board</button>`;
-  } else if (type === 'ace') {
-    icon.textContent = card.suit;
-    title.className = 'overlay-title other-ace';
-    title.textContent = 'Ace — Go Again!';
-    sub.innerHTML = `<span class="hl">${currentName}</span> found the <span class="hl">Ace of ${SUIT_NAMES[card.suit]} ${card.suit}</span>!<br>Not the jackpot — <span class="hl-green">another pick</span>!`;
-    btns.innerHTML = `<button class="btn btn-green" onclick="grantBonusPick()">Pick Again</button>`;
-  } else {
-    icon.textContent = card.suit;
-    title.className = 'overlay-title miss';
-    title.textContent = `${card.rank} of ${SUIT_NAMES[card.suit]}`;
-    sub.innerHTML = `Not the Ace. <span class="hl-green">${currentName}</span>'s draw is done.`;
-    btns.innerHTML = `<button class="btn btn-green" onclick="closeAndShowLock()">Done</button>`;
-  }
-
-  setTimeout(() => o.classList.add('active'), type === 'jackpot' ? 300 : 100);
-}
-
-function showSpectatorResult(result) {
-  if (!result) return;
-  const o = document.getElementById('overlay');
-  const icon = document.getElementById('overlayIcon');
-  const title = document.getElementById('overlayTitle');
-  const sub = document.getElementById('overlaySub');
-  const btns = document.getElementById('overlayBtns');
+  toast.className = 'result-toast';
 
   if (result.type === 'jackpot') {
+    toast.classList.add('jackpot');
     icon.textContent = '♠';
-    title.className = 'overlay-title jackpot';
+    title.className = 'rt-title t-jackpot';
     title.textContent = '🎉 JACKPOT! 🎉';
     sub.innerHTML = `<span class="hl-gold">${result.name}</span> found the <span class="hl-gold">Ace of Spades ♠</span>!`;
-    btns.innerHTML = '<button class="btn" onclick="closeOverlay()">Close</button>';
-    launchConfetti();
+    if (isAdminAction) {
+      btns.innerHTML = '<button class="btn" onclick="confirmReset()">New Game</button><button class="btn btn-muted" onclick="closeToast()">Close</button>';
+    } else {
+      btns.innerHTML = '<button class="btn btn-muted" onclick="closeToast()">Close</button>';
+      launchConfetti();
+    }
   } else if (result.type === 'joker') {
+    toast.classList.add('joker');
     icon.textContent = '🃏';
-    title.className = 'overlay-title joker-win';
+    title.className = 'rt-title t-joker';
     title.textContent = 'Joker Prize!';
-    sub.innerHTML = `<span class="hl-purple">${result.name}</span> found a <span class="hl-purple">Joker 🃏</span>!`;
-    btns.innerHTML = '<button class="btn" onclick="closeOverlay()">Close</button>';
+    sub.innerHTML = `<span class="hl-purple">${result.name}</span> found a <span class="hl-purple">Joker</span>! Bonus prize won.`;
+    if (isAdminAction) {
+      btns.innerHTML = '<button class="btn btn-green" onclick="closeToastAndLock()">Done</button>';
+    } else {
+      btns.innerHTML = '<button class="btn btn-muted" onclick="closeToast()">Close</button>';
+      autoCloseToast();
+    }
   } else if (result.type === 'ace') {
+    toast.classList.add('ace');
     icon.textContent = result.suit || '♥';
-    title.className = 'overlay-title other-ace';
-    title.textContent = 'Ace Found!';
-    sub.innerHTML = `<span class="hl">${result.name}</span> found an Ace — they pick again!`;
-    btns.innerHTML = '<button class="btn" onclick="closeOverlay()">Close</button>';
+    title.className = 'rt-title t-ace';
+    title.textContent = 'Ace — Pick Again!';
+    sub.innerHTML = `<span class="hl">${result.name}</span> found an Ace! They get another pick.`;
+    if (isAdminAction) {
+      btns.innerHTML = '<button class="btn btn-green" onclick="grantBonusPick()">Pick Again</button>';
+    } else {
+      btns.innerHTML = '<button class="btn btn-muted" onclick="closeToast()">Close</button>';
+      autoCloseToast();
+    }
   } else {
     icon.textContent = '✗';
-    title.className = 'overlay-title miss';
+    title.className = 'rt-title t-miss';
     title.textContent = result.card || 'Miss';
     sub.innerHTML = `<span class="hl-green">${result.name}</span> didn't find the Ace.`;
-    btns.innerHTML = '<button class="btn" onclick="closeOverlay()">Close</button>';
+    if (isAdminAction) {
+      btns.innerHTML = '<button class="btn btn-green" onclick="closeToastAndLock()">Done</button>';
+    } else {
+      btns.innerHTML = '<button class="btn btn-muted" onclick="closeToast()">Close</button>';
+      autoCloseToast();
+    }
   }
 
-  setTimeout(() => o.classList.add('active'), 200);
+  toast.classList.add('active');
+  bg.classList.add('active');
+}
 
-  // Auto-close for spectators after a few seconds
-  setTimeout(() => closeOverlay(), 5000);
+let autoCloseTimer;
+function autoCloseToast() {
+  clearTimeout(autoCloseTimer);
+  autoCloseTimer = setTimeout(closeToast, 5000);
+}
+
+function closeToast() {
+  clearTimeout(autoCloseTimer);
+  document.getElementById('resultToast').classList.remove('active');
+  document.getElementById('toastBg').classList.remove('active');
 }
 
 function grantBonusPick() {
-  document.getElementById('overlay').classList.remove('active');
+  closeToast();
   pickInProgress = false;
   gameRef.update({ status: 'active', lastResult: null });
 }
 
-function closeAndLock() {
-  document.getElementById('overlay').classList.remove('active');
+function closeToastAndLock() {
+  closeToast();
   lockForNextDraw();
 }
 
-function closeAndShowLock() {
-  document.getElementById('overlay').classList.remove('active');
-  if (isAdmin) showLockScreen();
-}
-
-function closeOverlay() {
-  document.getElementById('overlay').classList.remove('active');
-}
-
 // ===== CONFETTI =====
-
 function launchConfetti() {
   const colors = ['#FF3A00','#FFD600','#AA00FF','#00C853','#FF1744','#FFF'];
   for (let i = 0; i < 100; i++) {
@@ -1260,19 +1113,15 @@ function launchConfetti() {
 }
 
 // ===== FIRST LOAD =====
-// Check if game exists, if not and admin, init
 gameRef.once('value').then(snap => {
   document.getElementById('loadingScreen').classList.add('hidden');
   if (!snap.exists()) {
     document.getElementById('pinScreen').classList.remove('hidden');
-    // Will init game when first admin logs in
-    const origSubmit = submitPin;
-    submitPin = function() {
+    const origSubmit = window.submitPin;
+    window.submitPin = function() {
       const pin = document.getElementById('pinInput').value;
-      if (pin === ADMIN_PIN) {
-        initNewGame();
-      }
-      origSubmit.call(this);
+      if (pin === ADMIN_PIN && !snap.exists()) initNewGame();
+      origSubmit();
     };
   } else {
     document.getElementById('pinScreen').classList.remove('hidden');
